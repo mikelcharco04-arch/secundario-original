@@ -12,7 +12,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -22,46 +22,44 @@ const Login = () => {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      const trimmedKey = key.trim();
-      const trimmedName = name.trim();
+    const trimmedKey = key.trim();
+    const trimmedName = name.trim();
 
-      // Accept master key "117" for quick access
-      if (trimmedKey === "117") {
+    // Accept master key "117" for quick access
+    if (trimmedKey === "117") {
+      sessionStorage.setItem("proxy_session", JSON.stringify({
+        name: trimmedName,
+        key: "117",
+        type: "Normal",
+        expiresAt: null,
+        duration: "Ilimitada",
+      }));
+      navigate("/proxy");
+      setLoading(false);
+      return;
+    }
+
+    // Validate admin-generated keys
+    const foundKey = await validateKey(trimmedKey);
+    if (foundKey) {
+      const activated = await activateKey(trimmedKey, trimmedName);
+      if (activated) {
+        await registerActiveUser(trimmedName, activated.key, activated.type, activated.expiresAt || "");
         sessionStorage.setItem("proxy_session", JSON.stringify({
           name: trimmedName,
-          key: "117",
-          type: "Normal",
-          expiresAt: null,
-          duration: "Ilimitada",
+          key: activated.key,
+          type: activated.type,
+          expiresAt: activated.expiresAt,
+          duration: activated.duration,
         }));
         navigate("/proxy");
-        setLoading(false);
-        return;
-      }
-
-      // Validate admin-generated keys
-      const foundKey = validateKey(trimmedKey);
-      if (foundKey) {
-        const activated = activateKey(trimmedKey, trimmedName);
-        if (activated) {
-          registerActiveUser(trimmedName, activated.key, activated.type, activated.expiresAt || "");
-          sessionStorage.setItem("proxy_session", JSON.stringify({
-            name: trimmedName,
-            key: activated.key,
-            type: activated.type,
-            expiresAt: activated.expiresAt,
-            duration: activated.duration,
-          }));
-          navigate("/proxy");
-        } else {
-          setError("Error al activar la key. Intenta de nuevo.");
-        }
       } else {
-        setError("Key no encontrada, ya usada o expirada.");
+        setError("Error al activar la key. Intenta de nuevo.");
       }
-      setLoading(false);
-    }, 800);
+    } else {
+      setError("Key no encontrada, ya usada o expirada.");
+    }
+    setLoading(false);
   };
 
   return (

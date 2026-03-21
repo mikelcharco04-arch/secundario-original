@@ -67,15 +67,19 @@ const ProxyConfig = () => {
   const [ffStatus, setFfStatus] = useState("");
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("proxy_session");
-    if (!raw) { navigate("/"); return; }
-    const s = JSON.parse(raw);
-    if (isUserBlocked(s.key)) {
-      sessionStorage.removeItem("proxy_session");
-      navigate("/");
-      return;
-    }
-    setSession(s);
+    const checkSession = async () => {
+      const raw = sessionStorage.getItem("proxy_session");
+      if (!raw) { navigate("/"); return; }
+      const s = JSON.parse(raw);
+      const blocked = await isUserBlocked(s.key);
+      if (blocked) {
+        sessionStorage.removeItem("proxy_session");
+        navigate("/");
+        return;
+      }
+      setSession(s);
+    };
+    checkSession();
   }, [navigate]);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import VideoBackground from "@/components/VideoBackground";
 import {
-  getKeys, saveKeys, generateKeys, type ProxyKey,
+  getKeys, generateKeys, deleteKey, type ProxyKey,
   getActiveUsers, blockUser, unblockUser, kickUser, deleteUser, reduceKeyTime, type ActiveUser
 } from "@/lib/keys";
 import {
