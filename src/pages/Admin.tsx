@@ -65,13 +65,13 @@ const Admin = () => {
     setTimeout(() => setCopiedKey(null), 1500);
   };
 
-  const handleBlock = (key: string) => { blockUser(key); refreshData(); };
-  const handleUnblock = (key: string) => { unblockUser(key); refreshData(); };
-  const handleKick = (key: string) => { kickUser(key); refreshData(); };
-  const handleDeleteUser = (key: string) => { deleteUser(key); refreshData(); };
-  const handleReduceTime = (key: string, hours: number) => {
-    reduceKeyTime(key, hours * 3600000);
-    refreshData();
+  const handleBlock = async (key: string) => { await blockUser(key); await refreshData(); };
+  const handleUnblock = async (key: string) => { await unblockUser(key); await refreshData(); };
+  const handleKick = async (key: string) => { await kickUser(key); await refreshData(); };
+  const handleDeleteUser = async (key: string) => { await deleteUser(key); await refreshData(); };
+  const handleReduceTime = async (key: string, hours: number) => {
+    await reduceKeyTime(key, hours * 3600000);
+    await refreshData();
   };
 
   const durations = ["1 minuto", "1 día", "7 días", "30 días"];
