@@ -23,7 +23,6 @@ const Admin = () => {
   const [keys, setKeys] = useState<ProxyKey[]>([]);
   const [users, setUsers] = useState<ActiveUser[]>([]);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const refreshData = useCallback(async () => {
     const [k, u] = await Promise.all([getKeys(), getActiveUsers()]);
