@@ -373,7 +373,7 @@ const Admin = () => {
                   const copyId = `all-${dur}`;
                   const handleCopyAll = () => {
                     if (unusedKeys.length === 0) return;
-                    navigator.clipboard.writeText(unusedKeys.map(k => k.key).join("\n"));
+                    navigator.clipboard.writeText(unusedKeys.map(k => `${k.key} | ${k.status} | ${k.duration}`).join("\n"));
                     setCopiedKey(copyId);
                     setTimeout(() => setCopiedKey(null), 2000);
                   };
