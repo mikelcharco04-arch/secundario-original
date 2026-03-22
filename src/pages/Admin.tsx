@@ -335,7 +335,7 @@ const Admin = () => {
           </div>
         )}
 
-        {/* Keys Tab - Redesigned */}
+        {/* Keys Tab - Grouped by Duration */}
         {activeTab === "keys" && (
           <div className="animate-fade-in-up space-y-3" style={{ animationDelay: "0.15s" }}>
             {/* Keys header */}
@@ -360,98 +360,137 @@ const Admin = () => {
                 <p className="text-[10px] text-muted-foreground/60">Genera keys desde la pestaña "Generar"</p>
               </div>
             ) : (
-              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-0.5 scrollbar-thin">
-                {keys.map((k, i) => (
-                  <div
-                    key={k.key}
-                    className="glass-card overflow-hidden animate-fade-in-up"
-                    style={{ animationDelay: `${0.05 * i}s` }}
-                  >
-                    {/* Key header with status bar */}
-                    <div className={`h-1 w-full ${
-                      k.status === "Activa" ? "bg-emerald-500" :
-                      k.status === "Usada" ? "bg-amber-500" :
-                      k.status === "Bloqueada" ? "bg-red-500" :
-                      "bg-neutral-600"
-                    }`} />
-
-                    <div className="p-4 space-y-3">
-                      {/* Top row: status + type + actions */}
-                      <div className="flex items-center justify-between">
+              <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-0.5 scrollbar-thin">
+                {(["1 día", "7 días", "30 días"] as const).map(dur => {
+                  const grouped = keys.filter(k => k.duration === dur);
+                  if (grouped.length === 0) return null;
+                  const unusedKeys = grouped.filter(k => k.status === "Activa");
+                  const copyId = `all-${dur}`;
+                  const handleCopyAll = () => {
+                    if (unusedKeys.length === 0) return;
+                    navigator.clipboard.writeText(unusedKeys.map(k => k.key).join("\n"));
+                    setCopiedKey(copyId);
+                    setTimeout(() => setCopiedKey(null), 2000);
+                  };
+                  return (
+                    <div key={dur} className="space-y-2">
+                      <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-medium ${statusColor(k.status)}`}>
-                            {statusIcon(k.status)} {k.status}
+                          <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-xs font-mono font-semibold text-foreground uppercase tracking-wider">{dur}</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-secondary/60 text-muted-foreground font-mono border border-border/40">
+                            {grouped.length}
                           </span>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono border ${
-                            k.type === "Premium" 
-                              ? "text-amber-300 bg-amber-400/10 border-amber-400/20" 
-                              : "text-muted-foreground bg-secondary/50 border-border"
-                          }`}>
-                            {k.type === "Premium" && <Zap className="w-2.5 h-2.5 inline mr-0.5" />}
-                            {k.type}
-                          </span>
+                          {unusedKeys.length > 0 && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 font-mono border border-emerald-400/20">
+                              {unusedKeys.length} libres
+                            </span>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1">
+                        {unusedKeys.length > 0 && (
                           <button
-                            onClick={() => setRevealedKey(revealedKey === k.key ? null : k.key)}
-                            className="p-1.5 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95"
+                            onClick={handleCopyAll}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono font-medium transition-all active:scale-95 border ${
+                              copiedKey === copyId
+                                ? "bg-emerald-500/20 text-emerald-400 border-emerald-400/30"
+                                : "bg-secondary/50 text-muted-foreground border-border hover:border-ring hover:text-foreground"
+                            }`}
                           >
-                            {revealedKey === k.key
-                              ? <EyeOff className="w-3.5 h-3.5 text-muted-foreground" />
-                              : <Eye className="w-3.5 h-3.5 text-muted-foreground" />
-                            }
+                            {copiedKey === copyId ? <><Check className="w-3 h-3" /> Copiadas</> : <><Copy className="w-3 h-3" /> Copiar libres</>}
                           </button>
-                          <button
-                            onClick={() => handleCopy(k.key)}
-                            className="p-1.5 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95"
-                          >
-                            {copiedKey === k.key
-                              ? <Check className="w-3.5 h-3.5 text-emerald-400" />
-                              : <Copy className="w-3.5 h-3.5 text-muted-foreground" />
-                            }
-                          </button>
-                          <button
-                            onClick={() => handleDelete(k.key)}
-                            className="p-1.5 rounded-lg hover:bg-destructive/20 transition-colors active:scale-95"
-                          >
-                            <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                          </button>
-                        </div>
+                        )}
                       </div>
 
-                      {/* Key value */}
-                      <div className="bg-secondary/30 rounded-lg px-3 py-2.5 border border-border/50">
-                        <p className="text-xs font-mono text-foreground tracking-wide">
-                          {revealedKey === k.key ? k.key : k.key.replace(/[A-Z0-9]/g, "•")}
-                        </p>
-                      </div>
-
-                      {/* Info grid */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-                          <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Duración</p>
-                          <p className="text-[11px] text-foreground font-mono font-medium">{k.duration}</p>
-                        </div>
-                        <div className="bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-                          <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Creada</p>
-                          <p className="text-[11px] text-foreground font-mono font-medium">{new Date(k.createdAt).toLocaleDateString()}</p>
-                        </div>
-                        {k.usedBy && (
-                          <div className="bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-                            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Usuario</p>
-                            <p className="text-[11px] text-foreground font-mono font-medium">{k.usedBy}</p>
+                      <div className="space-y-2">
+                        {grouped.map((k, i) => (
+                          <div key={k.key} className="glass-card overflow-hidden animate-fade-in-up" style={{ animationDelay: `${0.03 * i}s` }}>
+                            <div className={`h-0.5 w-full ${k.status === "Activa" ? "bg-emerald-500" : k.status === "Usada" ? "bg-amber-500" : k.status === "Bloqueada" ? "bg-red-500" : "bg-neutral-600"}`} />
+                            <div className="p-3 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono font-medium ${statusColor(k.status)}`}>{statusIcon(k.status)} {k.status}</span>
+                                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono border ${k.type === "Premium" ? "text-amber-300 bg-amber-400/10 border-amber-400/20" : "text-muted-foreground bg-secondary/50 border-border"}`}>
+                                    {k.type === "Premium" && <Zap className="w-2.5 h-2.5 inline mr-0.5" />}{k.type}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  <button onClick={() => setRevealedKey(revealedKey === k.key ? null : k.key)} className="p-1 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95">
+                                    {revealedKey === k.key ? <EyeOff className="w-3 h-3 text-muted-foreground" /> : <Eye className="w-3 h-3 text-muted-foreground" />}
+                                  </button>
+                                  <button onClick={() => handleCopy(k.key)} className="p-1 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95">
+                                    {copiedKey === k.key ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
+                                  </button>
+                                  <button onClick={() => handleDelete(k.key)} className="p-1 rounded-lg hover:bg-destructive/20 transition-colors active:scale-95">
+                                    <Trash2 className="w-3 h-3 text-destructive" />
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="bg-secondary/30 rounded-lg px-2.5 py-2 border border-border/50">
+                                <p className="text-[11px] font-mono text-foreground tracking-wide">{revealedKey === k.key ? k.key : k.key.replace(/[A-Z0-9]/g, "•")}</p>
+                              </div>
+                              <div className="flex gap-2 text-[9px] font-mono text-muted-foreground/70">
+                                <span>Creada: {new Date(k.createdAt).toLocaleDateString()}</span>
+                                {k.usedBy && <span>• {k.usedBy}</span>}
+                                {k.expiresAt && <span>• {getTimeRemaining(k.expiresAt)}</span>}
+                              </div>
+                            </div>
                           </div>
-                        )}
-                        {k.expiresAt && (
-                          <div className="bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-                            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Expira</p>
-                            <p className="text-[11px] text-foreground font-mono font-medium">{getTimeRemaining(k.expiresAt) || new Date(k.expiresAt).toLocaleDateString()}</p>
-                          </div>
-                        )}
+                        ))}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
+
+                {/* Other durations (e.g. 1 minuto) */}
+                {(() => {
+                  const otherKeys = keys.filter(k => !["1 día", "7 días", "30 días"].includes(k.duration));
+                  if (otherKeys.length === 0) return null;
+                  const unusedOther = otherKeys.filter(k => k.status === "Activa");
+                  return (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between px-1">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-xs font-mono font-semibold text-foreground uppercase tracking-wider">Otras</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-secondary/60 text-muted-foreground font-mono border border-border/40">{otherKeys.length}</span>
+                        </div>
+                        {unusedOther.length > 0 && (
+                          <button
+                            onClick={() => { navigator.clipboard.writeText(unusedOther.map(k => k.key).join("\n")); setCopiedKey("all-other"); setTimeout(() => setCopiedKey(null), 2000); }}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono font-medium transition-all active:scale-95 border ${copiedKey === "all-other" ? "bg-emerald-500/20 text-emerald-400 border-emerald-400/30" : "bg-secondary/50 text-muted-foreground border-border hover:border-ring hover:text-foreground"}`}
+                          >
+                            {copiedKey === "all-other" ? <><Check className="w-3 h-3" /> Copiadas</> : <><Copy className="w-3 h-3" /> Copiar libres</>}
+                          </button>
+                        )}
+                      </div>
+                      {otherKeys.map((k, i) => (
+                        <div key={k.key} className="glass-card overflow-hidden animate-fade-in-up" style={{ animationDelay: `${0.03 * i}s` }}>
+                          <div className={`h-0.5 w-full ${k.status === "Activa" ? "bg-emerald-500" : k.status === "Usada" ? "bg-amber-500" : k.status === "Bloqueada" ? "bg-red-500" : "bg-neutral-600"}`} />
+                          <div className="p-3 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono font-medium ${statusColor(k.status)}`}>{statusIcon(k.status)} {k.status}</span>
+                              <div className="flex items-center gap-0.5">
+                                <button onClick={() => setRevealedKey(revealedKey === k.key ? null : k.key)} className="p-1 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95">
+                                  {revealedKey === k.key ? <EyeOff className="w-3 h-3 text-muted-foreground" /> : <Eye className="w-3 h-3 text-muted-foreground" />}
+                                </button>
+                                <button onClick={() => handleCopy(k.key)} className="p-1 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95">
+                                  {copiedKey === k.key ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
+                                </button>
+                                <button onClick={() => handleDelete(k.key)} className="p-1 rounded-lg hover:bg-destructive/20 transition-colors active:scale-95">
+                                  <Trash2 className="w-3 h-3 text-destructive" />
+                                </button>
+                              </div>
+                            </div>
+                            <div className="bg-secondary/30 rounded-lg px-2.5 py-2 border border-border/50">
+                              <p className="text-[11px] font-mono text-foreground tracking-wide">{revealedKey === k.key ? k.key : k.key.replace(/[A-Z0-9]/g, "•")}</p>
+                            </div>
+                            <p className="text-[9px] font-mono text-muted-foreground/70">{k.duration}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>
