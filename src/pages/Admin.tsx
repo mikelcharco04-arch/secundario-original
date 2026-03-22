@@ -419,9 +419,6 @@ const Admin = () => {
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-0.5">
-                                  <button onClick={() => setRevealedKey(revealedKey === k.key ? null : k.key)} className="p-1 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95">
-                                    {revealedKey === k.key ? <EyeOff className="w-3 h-3 text-muted-foreground" /> : <Eye className="w-3 h-3 text-muted-foreground" />}
-                                  </button>
                                   <button onClick={() => handleCopy(k.key)} className="p-1 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95">
                                     {copiedKey === k.key ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
                                   </button>
