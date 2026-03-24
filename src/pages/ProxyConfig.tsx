@@ -182,7 +182,7 @@ const ProxyConfig = () => {
     setTimeout(() => { setLaunchingFF(false); setFfStatus(""); }, 3000);
   }, []);
 
-  const handleLogout = () => { sessionStorage.removeItem("proxy_session"); navigate("/"); };
+  const handleLogout = () => { localStorage.removeItem("proxy_session"); navigate("/"); };
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
