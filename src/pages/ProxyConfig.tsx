@@ -105,12 +105,18 @@ const ProxyConfig = () => {
 
   useEffect(() => {
     const checkSession = async () => {
-      const raw = sessionStorage.getItem("proxy_session");
+      const raw = localStorage.getItem("proxy_session");
       if (!raw) { navigate("/"); return; }
       const s = JSON.parse(raw);
+      // Check expiry
+      if (s.expiresAt && new Date(s.expiresAt).getTime() <= Date.now()) {
+        localStorage.removeItem("proxy_session");
+        navigate("/");
+        return;
+      }
       const blocked = await isUserBlocked(s.key);
       if (blocked) {
-        sessionStorage.removeItem("proxy_session");
+        localStorage.removeItem("proxy_session");
         navigate("/");
         return;
       }
