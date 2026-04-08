@@ -9,7 +9,7 @@ import {
   Lock, User, KeyRound, Power, LogOut, Gamepad2, Loader2,
   Shield, Activity, Zap, Eye, ChevronRight, Cpu, HardDrive,
   Home, Settings, FileText, UserCircle, Code, AlertTriangle,
-  Copy, Check, ChevronDown
+  Copy, Check, ChevronDown, Crosshair, Target, Volume2
 } from "lucide-react";
 
 interface Session {
@@ -87,15 +87,6 @@ const ProxyConfig = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
   const [activeTab, setActiveTab] = useState<"home" | "servers" | "settings">("home");
-  const [mode, setMode] = useState<"Desactivada" | "Manual" | "Automática">("Desactivada");
-  const [server, setServer] = useState("");
-  const [port, setPort] = useState("");
-  const [authEnabled, setAuthEnabled] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [connecting, setConnecting] = useState(false);
-  const [connected, setConnected] = useState(false);
-  const [networkInfo, setNetworkInfo] = useState<any>(null);
   const [timeLeft, setTimeLeft] = useState("");
   const [launchingFF, setLaunchingFF] = useState(false);
   const [ffMethod, setFfMethod] = useState(0);
@@ -104,12 +95,27 @@ const ProxyConfig = () => {
   const [expandedServer, setExpandedServer] = useState<number | null>(null);
   const [settingsSection, setSettingsSection] = useState<string | null>(null);
 
+  // Game toggles
+  const [noRecoil, setNoRecoil] = useState(false);
+  const [autoAim, setAutoAim] = useState(false);
+  const [bugMiraX2, setBugMiraX2] = useState(false);
+  const [fovEnabled, setFovEnabled] = useState(false);
+  const [fovSize, setFovSize] = useState(120);
+  const [aimSmooth, setAimSmooth] = useState(50);
+  const [firerate, setFirerate] = useState(70);
+  const [sensitivity, setSensitivity] = useState(40);
+  const [headshot, setHeadshot] = useState(false);
+  const [antiKnock, setAntiKnock] = useState(false);
+  const [speedHack, setSpeedHack] = useState(false);
+  const [wallHack, setWallHack] = useState(false);
+  const [aimLock, setAimLock] = useState(false);
+  const [damageBoost, setDamageBoost] = useState(60);
+
   useEffect(() => {
     const checkSession = async () => {
       const raw = localStorage.getItem("proxy_session");
       if (!raw) { navigate("/"); return; }
       const s = JSON.parse(raw);
-      // Check expiry
       if (s.expiresAt && new Date(s.expiresAt).getTime() <= Date.now()) {
         localStorage.removeItem("proxy_session");
         navigate("/");
@@ -140,23 +146,11 @@ const ProxyConfig = () => {
     return () => clearInterval(interval);
   }, [session]);
 
-  const handleConnect = async () => {
-    setConnecting(true);
-    try {
-      const res = await fetch("https://ipapi.co/json/");
-      const data = await res.json();
-      setNetworkInfo({ ip: data.ip, city: data.city, country: data.country_name, org: data.org });
-    } catch {
-      setNetworkInfo({ ip: "No disponible", city: "—", country: "—", org: "—" });
-    }
-    setTimeout(() => { setConnecting(false); setConnected(true); }, 2000);
-  };
-
   const launchFreeFire = useCallback(async () => {
     setLaunchingFF(true); setFfMethod(0); setFfStatus("");
     for (let i = 0; i < FREEFIRE_METHODS.length; i++) {
       setFfMethod(i + 1);
-      setFfStatus(`Método ${i + 1}/30: intentando...`);
+      setFfStatus(`Method ${i + 1}/${FREEFIRE_METHODS.length}`);
       try {
         const url = FREEFIRE_METHODS[i];
         if (url.startsWith("intent://") || url.startsWith("freefireth://") || url.startsWith("freefiremax://") || url.startsWith("android-app://") || url.startsWith("fb://") || url.startsWith("market://")) {
@@ -172,14 +166,12 @@ const ProxyConfig = () => {
           window.open(url, "_blank");
           await new Promise(r => setTimeout(r, 1500));
         }
-        setFfStatus(`Método ${i + 1} ejecutado — verificando...`);
         await new Promise(r => setTimeout(r, 500));
       } catch {
-        setFfStatus(`Método ${i + 1} falló, probando siguiente...`);
         await new Promise(r => setTimeout(r, 300));
       }
     }
-    setFfStatus("Todos los métodos ejecutados");
+    setFfStatus("Done");
     setTimeout(() => { setLaunchingFF(false); setFfStatus(""); }, 3000);
   }, []);
 
@@ -193,17 +185,50 @@ const ProxyConfig = () => {
 
   if (!session) return null;
 
-  const modes: Array<"Desactivada" | "Manual" | "Automática"> = ["Desactivada", "Manual", "Automática"];
+  // Toggle component
+  const Toggle = ({ label, value, onChange, color = "emerald" }: { label: string; value: boolean; onChange: (v: boolean) => void; color?: string }) => (
+    <div className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
+      <span className="text-xs text-foreground font-medium">{label}</span>
+      <button
+        onClick={() => onChange(!value)}
+        className={`w-10 h-5.5 rounded-full transition-all relative ${value ? (color === "emerald" ? "bg-emerald-500" : color === "blue" ? "bg-blue-500" : color === "amber" ? "bg-amber-500" : color === "purple" ? "bg-purple-500" : "bg-emerald-500") : "bg-secondary border border-border/50"}`}
+        style={{ width: 40, height: 22 }}
+      >
+        <span className={`absolute top-[3px] w-4 h-4 rounded-full transition-transform shadow-sm ${value ? "bg-background translate-x-[20px]" : "bg-muted-foreground/70 translate-x-[3px]"}`} />
+      </button>
+    </div>
+  );
+
+  // Slider component
+  const SliderBar = ({ label, value, onChange, min = 0, max = 100, unit = "%" }: { label: string; value: number; onChange: (v: number) => void; min?: number; max?: number; unit?: string }) => (
+    <div className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[10px] text-muted-foreground font-medium">{label}</span>
+        <span className="text-[10px] text-foreground font-mono font-medium">{value}{unit}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full h-1 rounded-full appearance-none bg-secondary/60 cursor-pointer accent-emerald-500"
+        style={{
+          background: `linear-gradient(to right, hsl(142 72% 50%) ${((value - min) / (max - min)) * 100}%, hsl(0 0% 14%) ${((value - min) / (max - min)) * 100}%)`,
+        }}
+      />
+    </div>
+  );
 
   const renderHome = () => (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div className="flex items-center gap-3">
           <img src={defaultAvatar} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-border object-cover" />
           <div>
-            <h1 className="text-lg font-semibold text-foreground">Configurar Proxy</h1>
-            <p className="text-xs text-muted-foreground">Hola, {session.name}</p>
+            <p className="text-sm font-semibold text-foreground">{session.name}</p>
+            <p className="text-[10px] text-muted-foreground">{session.duration} — {session.expiresAt ? (timeLeft || "...") : "∞"}</p>
           </div>
         </div>
         <button onClick={handleLogout} className="p-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors active:scale-95">
@@ -211,342 +236,86 @@ const ProxyConfig = () => {
         </button>
       </div>
 
-      {/* Session Info */}
-      <div className="glass-card p-4 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
-        <div className="flex items-center gap-2 mb-3">
-          <Shield className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Sesión activa</span>
+      {/* Free Fire button */}
+      <button
+        onClick={launchFreeFire}
+        disabled={launchingFF}
+        className="w-full glass-card p-3 flex items-center gap-3 hover:bg-card/90 active:scale-[0.98] transition-all animate-fade-in-up border-orange-500/20"
+      >
+        {launchingFF ? <Loader2 className="w-5 h-5 text-orange-400 animate-spin" /> : <Gamepad2 className="w-5 h-5 text-orange-400" />}
+        <div className="flex-1 text-left">
+          <span className="text-sm font-medium text-foreground">Free Fire</span>
+          {launchingFF && <p className="text-[9px] text-muted-foreground font-mono">{ffStatus}</p>}
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-secondary/30 rounded-lg px-3 py-2 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Usuario</p>
-            <p className="text-[11px] text-foreground font-medium">{session.name}</p>
+        {launchingFF && (
+          <div className="w-16 h-1 rounded-full bg-secondary/50 overflow-hidden">
+            <div className="h-full bg-orange-400 rounded-full transition-all" style={{ width: `${(ffMethod / FREEFIRE_METHODS.length) * 100}%` }} />
           </div>
-          <div className="bg-secondary/30 rounded-lg px-3 py-2 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Tipo</p>
-            <p className="text-[11px] text-foreground font-medium flex items-center gap-1">
-              {session.type === "Premium" && <Zap className="w-3 h-3 text-amber-400" />}
-              {session.type}
-            </p>
-          </div>
-          <div className="bg-secondary/30 rounded-lg px-3 py-2 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Duración</p>
-            <p className="text-[11px] text-foreground font-medium">{session.duration}</p>
-          </div>
-          <div className="bg-secondary/30 rounded-lg px-3 py-2 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Tiempo</p>
-            <p className="text-[11px] text-foreground font-medium">
-              {session.expiresAt ? (timeLeft || "Calculando...") : "\u221E"}
-            </p>
-          </div>
+        )}
+      </button>
+
+      {/* Game Functions */}
+      <div className="glass-card p-3 animate-fade-in-up space-y-2" style={{ animationDelay: "0.05s" }}>
+        <div className="flex items-center gap-2 mb-1">
+          <Crosshair className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-medium">Combat Mods</span>
         </div>
+        <Toggle label="No Recoil" value={noRecoil} onChange={setNoRecoil} color="emerald" />
+        <Toggle label="Auto Apuntado" value={autoAim} onChange={setAutoAim} color="blue" />
+        <Toggle label="Bug Mira x2" value={bugMiraX2} onChange={setBugMiraX2} color="amber" />
+        <Toggle label="Headshot Lock" value={headshot} onChange={setHeadshot} color="purple" />
+        <Toggle label="Anti-Knock" value={antiKnock} onChange={setAntiKnock} color="emerald" />
+        <Toggle label="Aim Lock" value={aimLock} onChange={setAimLock} color="blue" />
       </div>
 
-      {/* Mode selector */}
-      <div className="glass-card p-4 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-        <p className="text-xs text-muted-foreground mb-3 font-medium">Modo de conexión</p>
-        <div className="grid grid-cols-3 gap-2">
-          {modes.map(m => (
-            <button
-              key={m}
-              onClick={() => { setMode(m); setConnected(false); }}
-              className={`py-2 px-3 rounded-lg text-xs font-medium transition-all active:scale-95 ${
-                mode === m ? "bg-primary text-primary-foreground" : "bg-secondary/50 text-muted-foreground hover:bg-secondary"
-              }`}
-            >
-              {m}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Config fields */}
-      {mode !== "Desactivada" && (
-        <div className="glass-card p-4 space-y-3 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
-          <div className="relative">
-            <Server className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input placeholder="Servidor" value={mode === "Automática" ? "auto.proxy.net" : server} onChange={(e) => setServer(e.target.value)} disabled={mode === "Automática"} className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-all disabled:opacity-50" />
-          </div>
-          <div className="relative">
-            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input placeholder="Puerto" value={mode === "Automática" ? "8080" : port} onChange={(e) => setPort(e.target.value)} disabled={mode === "Automática"} className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-all disabled:opacity-50" />
-          </div>
-          <div className="flex items-center justify-between py-2">
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-foreground">Autenticación</span>
-            </div>
-            <button onClick={() => setAuthEnabled(!authEnabled)} className={`w-10 h-6 rounded-full transition-colors relative ${authEnabled ? "bg-primary" : "bg-secondary"}`}>
-              <span className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${authEnabled ? "bg-primary-foreground translate-x-5" : "bg-muted-foreground translate-x-1"}`} />
-            </button>
-          </div>
-          {authEnabled && (
-            <div className="space-y-3 pt-1">
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-all" />
-              </div>
-              <div className="relative">
-                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-all font-mono" />
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Network info */}
-      {connected && networkInfo && (
-        <div className="glass-card p-4 animate-fade-in-up">
-          <p className="text-xs text-muted-foreground mb-3 font-medium">Información de Red</p>
-          <div className="space-y-2.5">
-            {[
-              { icon: Wifi, label: "IP", value: networkInfo.ip },
-              { icon: Radio, label: "Tipo de red", value: "WiFi" },
-              { icon: MapPin, label: "Ubicación", value: `${networkInfo.city} / ${networkInfo.country}` },
-              { icon: Signal, label: "Señal", value: "Fuerte" },
-              { icon: Clock, label: "Duración key", value: session.expiresAt ? `${session.duration} — ${timeLeft}` : `${session.duration}` },
-            ].map(({ icon: Icon, label, value }) => (
-              <div key={label} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Icon className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{label}</span>
-                </div>
-                <span className="text-xs text-foreground font-medium">{value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Connect button */}
-      {mode !== "Desactivada" && !connected && (
-        <button onClick={handleConnect} disabled={connecting} className="w-full glass-card p-4 flex items-center justify-center gap-3 hover:bg-card/90 active:scale-[0.98] transition-all animate-fade-in-up">
-          {connecting ? (
-            <>
-              <div className="relative">
-                <div className="w-5 h-5 rounded-full bg-primary/20 animate-connecting" />
-                <Power className="w-5 h-5 text-primary absolute inset-0" />
-              </div>
-              <span className="text-sm font-medium">Conectando...</span>
-            </>
-          ) : (
-            <>
-              <Power className="w-5 h-5 text-foreground" />
-              <span className="text-sm font-medium">Conectar al Servidor</span>
-            </>
-          )}
-        </button>
-      )}
-
-      {connected && (
-        <div className="glass-card p-4 text-center animate-fade-in-up border-emerald-500/20">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-sm font-medium text-emerald-400">Conexión Activa</span>
-          </div>
-        </div>
-      )}
-
-      {/* System Info */}
-      <div className="glass-card p-4 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-3">
-          <Cpu className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Sistema</span>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { label: "Protocolo", value: "HTTPS", icon: Shield },
-            { label: "Cifrado", value: "AES-256", icon: Lock },
-            { label: "DNS", value: "1.1.1.1", icon: Globe },
-          ].map(({ label, value, icon: Icon }) => (
-            <div key={label} className="bg-secondary/30 rounded-lg px-2 py-2.5 border border-border/30 text-center">
-              <Icon className="w-3.5 h-3.5 text-muted-foreground mx-auto mb-1" />
-              <p className="text-[10px] text-foreground font-medium">{value}</p>
-              <p className="text-[8px] text-muted-foreground/70 uppercase tracking-wider">{label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Performance */}
-      <div className="glass-card p-4 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-3">
-          <Activity className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Rendimiento</span>
-        </div>
-        <div className="space-y-2.5">
-          {[
-            { label: "Latencia", value: "12ms", pct: 12 },
-            { label: "Velocidad", value: "94 Mbps", pct: 94 },
-            { label: "Estabilidad", value: "99.9%", pct: 99 },
-          ].map(({ label, value, pct }) => (
-            <div key={label}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-muted-foreground">{label}</span>
-                <span className="text-[10px] text-foreground font-medium">{value}</span>
-              </div>
-              <div className="w-full h-1 rounded-full bg-secondary/50 overflow-hidden">
-                <div className="h-full rounded-full bg-emerald-500 transition-all duration-700" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Advanced Tunneling Module */}
-      <div className="glass-card p-4 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-3">
-          <Shield className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Módulo de Túnel Avanzado</span>
-        </div>
-        <div className="space-y-2">
-          {[
-            { label: "TLS Handshake", value: "v1.3 / ECDHE-RSA", status: true },
-            { label: "Obfuscación L4", value: "XOR-Cipher activo", status: true },
-            { label: "Anti-DPI Bypass", value: "Fragmentación TCP", status: true },
-            { label: "Packet Padding", value: "256-byte aligned", status: true },
-            { label: "Header Injection", value: "X-Forwarded rotativo", status: false },
-          ].map(({ label, value, status }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-              <div>
-                <p className="text-[10px] text-muted-foreground">{label}</p>
-                <p className="text-[9px] text-foreground/70 font-mono">{value}</p>
-              </div>
-              <div className={`w-2 h-2 rounded-full ${status ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Packet Flow Analyzer */}
-      <div className="glass-card p-4 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-3">
-          <Zap className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Analizador de Paquetes</span>
-        </div>
-        <div className="bg-secondary/20 rounded-lg p-3 border border-border/30 font-mono text-[9px] text-foreground/60 space-y-1 max-h-24 overflow-hidden">
-          <p><span className="text-emerald-400">[OK]</span> SYN → ACK handshake: 8ms</p>
-          <p><span className="text-emerald-400">[OK]</span> TLS negotiate: cipher=AES_256_GCM</p>
-          <p><span className="text-emerald-400">[OK]</span> Tunnel established: port=443</p>
-          <p><span className="text-amber-400">[INFO]</span> Route: client → proxy → target</p>
-          <p><span className="text-emerald-400">[OK]</span> DNS resolved: 1.1.1.1 (3ms)</p>
-          <p><span className="text-emerald-400">[OK]</span> Keepalive: interval=30s</p>
-          <p><span className="text-muted-foreground/40">[STREAM]</span> Rx: 2.4MB/s | Tx: 1.1MB/s</p>
-        </div>
-      </div>
-
-      {/* Free Fire */}
-      {connected && (
-        <button onClick={launchFreeFire} disabled={launchingFF} className="w-full glass-card p-4 flex flex-col items-center gap-2 hover:bg-card/90 active:scale-[0.98] transition-all animate-fade-in-up border-orange-500/20">
-          <div className="flex items-center gap-3">
-            {launchingFF ? <Loader2 className="w-5 h-5 text-orange-400 animate-spin" /> : <Gamepad2 className="w-5 h-5 text-orange-400" />}
-            <span className="text-sm font-medium text-foreground">{launchingFF ? "Abriendo Free Fire..." : "Abrir Free Fire"}</span>
-          </div>
-          {launchingFF && (
-            <div className="w-full space-y-1.5">
-              <div className="w-full bg-secondary/50 rounded-full h-1.5 overflow-hidden">
-                <div className="h-full bg-orange-400 rounded-full transition-all duration-300" style={{ width: `${(ffMethod / 30) * 100}%` }} />
-              </div>
-              <p className="text-[10px] text-muted-foreground font-mono">{ffStatus}</p>
-            </div>
-          )}
-          {!launchingFF && <p className="text-[10px] text-muted-foreground">30 métodos de apertura automáticos</p>}
-        </button>
-      )}
-
-      {/* Command Terminal */}
-      <div className="glass-card p-4 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-3">
-          <Code className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Terminal de Comandos</span>
-        </div>
-        <div className="bg-secondary/20 rounded-lg p-3 border border-border/30 font-mono text-[9px] space-y-1.5">
-          <p className="text-emerald-400">root@proxy:~$ <span className="text-foreground/70">proxy --status</span></p>
-          <p className="text-foreground/50">Estado: {connected ? "CONECTADO" : "DESCONECTADO"} | Protocolo: HTTPS/SOCKS5</p>
-          <p className="text-emerald-400">root@proxy:~$ <span className="text-foreground/70">tunnel --check-integrity</span></p>
-          <p className="text-foreground/50">Integridad del túnel: OK | Hash: SHA-256 verificado</p>
-          <p className="text-emerald-400">root@proxy:~$ <span className="text-foreground/70">net --scan-ports 1-65535</span></p>
-          <p className="text-foreground/50">Puertos abiertos: 443, 8080, 3128 | Filtrados: 0</p>
-          <p className="text-emerald-400">root@proxy:~$ <span className="text-foreground/70">cipher --rotate-keys</span></p>
-          <p className="text-foreground/50">Rotación de claves AES completada | Próxima: 3600s</p>
-          <p className="text-amber-400">root@proxy:~$ <span className="text-foreground/40 animate-pulse">_</span></p>
-        </div>
-      </div>
-
-      {/* Deep Packet Inspection Shield */}
-      <div className="glass-card p-4 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-3">
+      {/* FOV Section */}
+      <div className="glass-card p-3 animate-fade-in-up space-y-2" style={{ animationDelay: "0.1s" }}>
+        <div className="flex items-center gap-2 mb-1">
           <Eye className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Escudo Anti-DPI</span>
+          <span className="text-xs text-muted-foreground font-medium">Field of View</span>
         </div>
-        <div className="space-y-2">
-          {[
-            { label: "Fragmentación TCP", value: "Activo — 3 segmentos", pct: 100 },
-            { label: "SNI Spoofing", value: "Rotación cada 60s", pct: 85 },
-            { label: "Packet Morphing", value: "Aleatorización L7", pct: 92 },
-            { label: "QUIC Masking", value: "UDP encapsulado", pct: 78 },
-          ].map(({ label, value, pct }) => (
-            <div key={label} className="bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-muted-foreground">{label}</span>
-                <span className="text-[9px] text-emerald-400 font-mono">{value}</span>
-              </div>
-              <div className="w-full h-1 rounded-full bg-secondary/50 overflow-hidden">
-                <div className="h-full rounded-full bg-emerald-500/70 transition-all duration-700" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
+        <Toggle label="FOV" value={fovEnabled} onChange={setFovEnabled} color="amber" />
+        {fovEnabled && (
+          <SliderBar label="FOV Size" value={fovSize} onChange={setFovSize} min={40} max={300} unit="px" />
+        )}
       </div>
 
-      {/* Network Routing Matrix */}
-      <div className="glass-card p-4 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-3">
-          <Radio className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Matriz de Enrutamiento</span>
+      {/* Sliders */}
+      <div className="glass-card p-3 animate-fade-in-up space-y-2" style={{ animationDelay: "0.15s" }}>
+        <div className="flex items-center gap-2 mb-1">
+          <Volume2 className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-medium">Performance Tuning</span>
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { label: "Nodos activos", value: "47", icon: Server },
-            { label: "Saltos (hops)", value: "3", icon: Zap },
-            { label: "Rutas cifradas", value: "12", icon: Lock },
-            { label: "Redundancia", value: "x3", icon: HardDrive },
-          ].map(({ label, value, icon: Icon }) => (
-            <div key={label} className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30 text-center">
-              <Icon className="w-3.5 h-3.5 text-muted-foreground mx-auto mb-1" />
-              <p className="text-sm text-foreground font-bold font-mono">{value}</p>
-              <p className="text-[8px] text-muted-foreground/70 uppercase tracking-wider">{label}</p>
-            </div>
-          ))}
-        </div>
+        <SliderBar label="Aim Smoothness" value={aimSmooth} onChange={setAimSmooth} />
+        <SliderBar label="Fire Rate Boost" value={firerate} onChange={setFirerate} />
+        <SliderBar label="Sensitivity Override" value={sensitivity} onChange={setSensitivity} />
+        <SliderBar label="Damage Multiplier" value={damageBoost} onChange={setDamageBoost} unit="x" />
       </div>
 
-      {/* Bandwidth Optimizer */}
-      <div className="glass-card p-4 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-3">
-          <Activity className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Optimizador de Ancho de Banda</span>
+      {/* Extra toggles */}
+      <div className="glass-card p-3 animate-fade-in-up space-y-2" style={{ animationDelay: "0.2s" }}>
+        <div className="flex items-center gap-2 mb-1">
+          <Zap className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-medium">Advanced Exploits</span>
         </div>
-        <div className="space-y-2.5">
-          {[
-            { label: "Compresión Brotli", value: "87% reducción", pct: 87 },
-            { label: "Cache L2 Proxy", value: "2.4GB cacheado", pct: 64 },
-            { label: "TCP Window Scale", value: "Factor: 14", pct: 95 },
-            { label: "MTU Adaptativo", value: "1420 bytes", pct: 72 },
-          ].map(({ label, value, pct }) => (
-            <div key={label}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-muted-foreground">{label}</span>
-                <span className="text-[10px] text-foreground font-medium font-mono">{value}</span>
-              </div>
-              <div className="w-full h-1 rounded-full bg-secondary/50 overflow-hidden">
-                <div className="h-full rounded-full bg-blue-500/70 transition-all duration-700" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
+        <Toggle label="Speed Hack" value={speedHack} onChange={setSpeedHack} color="amber" />
+        <Toggle label="Wall Hack" value={wallHack} onChange={setWallHack} color="purple" />
       </div>
+
+      {/* FOV Circle Overlay */}
+      {fovEnabled && (
+        <div className="fixed inset-0 z-40 pointer-events-none flex items-center justify-center">
+          <div
+            className="rounded-full border-2 border-emerald-400/60"
+            style={{
+              width: fovSize,
+              height: fovSize,
+              boxShadow: "0 0 20px rgba(52,211,153,0.15)",
+              transition: "width 0.2s, height 0.2s",
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 
@@ -554,7 +323,7 @@ const ProxyConfig = () => {
     <div className="space-y-4">
       <div className="animate-fade-in-up">
         <h1 className="text-lg font-semibold text-foreground">Servidores</h1>
-        <p className="text-xs text-muted-foreground">{SERVERS.length} servidores disponibles en todo el mundo</p>
+        <p className="text-xs text-muted-foreground">{SERVERS.length} servidores disponibles</p>
       </div>
 
       <div className="space-y-2 max-h-[calc(100vh-180px)] overflow-y-auto pr-0.5 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
@@ -595,10 +364,7 @@ const ProxyConfig = () => {
                       onClick={() => copyToClipboard(value, id)}
                       className="p-1.5 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95"
                     >
-                      {copiedField === id
-                        ? <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        : <Copy className="w-3.5 h-3.5 text-muted-foreground" />
-                      }
+                      {copiedField === id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
                     </button>
                   </div>
                 ))}
@@ -606,78 +372,6 @@ const ProxyConfig = () => {
             )}
           </div>
         ))}
-      </div>
-
-      {/* Server Stats */}
-      <div className="glass-card p-4 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-        <div className="flex items-center gap-2 mb-3">
-          <Activity className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Estadísticas de Servidores</span>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { label: "Activos", value: "27/27", color: "text-emerald-400" },
-            { label: "Carga", value: "34%", color: "text-foreground" },
-            { label: "Latencia", value: "8ms", color: "text-foreground" },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="bg-secondary/20 rounded-lg px-2 py-2.5 border border-border/30 text-center">
-              <p className={`text-sm font-bold font-mono ${color}`}>{value}</p>
-              <p className="text-[8px] text-muted-foreground/70 uppercase tracking-wider">{label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Geo-Routing */}
-      <div className="glass-card p-4 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
-        <div className="flex items-center gap-2 mb-3">
-          <Globe className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Enrutamiento Geográfico</span>
-        </div>
-        <div className="space-y-2">
-          {[
-            { region: "América", servers: 10, load: 28 },
-            { region: "Europa", servers: 8, load: 42 },
-            { region: "Asia-Pacífico", servers: 6, load: 35 },
-            { region: "África/Medio Oriente", servers: 3, load: 18 },
-          ].map(({ region, servers, load }) => (
-            <div key={region} className="bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-muted-foreground">{region}</span>
-                <span className="text-[9px] text-foreground font-mono">{servers} servidores — {load}% carga</span>
-              </div>
-              <div className="w-full h-1 rounded-full bg-secondary/50 overflow-hidden">
-                <div className="h-full rounded-full bg-emerald-500/60" style={{ width: `${load}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Protocol Selector */}
-      <div className="glass-card p-4 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-        <div className="flex items-center gap-2 mb-3">
-          <Lock className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">Protocolos Disponibles</span>
-        </div>
-        <div className="space-y-2">
-          {[
-            { proto: "HTTP Proxy", port: "8080", status: "Estándar", active: true },
-            { proto: "HTTPS/TLS", port: "443", status: "Cifrado", active: true },
-            { proto: "SOCKS5", port: "1080", status: "Avanzado", active: true },
-            { proto: "SOCKS4a", port: "1081", status: "Legacy", active: false },
-            { proto: "SSH Tunnel", port: "22", status: "Túnel seguro", active: true },
-            { proto: "WireGuard", port: "51820", status: "VPN Layer", active: false },
-          ].map(({ proto, port, status, active }) => (
-            <div key={proto} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-              <div>
-                <p className="text-[10px] text-foreground font-medium">{proto}</p>
-                <p className="text-[8px] text-muted-foreground font-mono">Puerto: {port} — {status}</p>
-              </div>
-              <div className={`w-2 h-2 rounded-full ${active ? "bg-emerald-500" : "bg-muted-foreground/30"}`} />
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -692,29 +386,18 @@ const ProxyConfig = () => {
           <div className="flex justify-center">
             <img src={defaultAvatar} alt="Avatar" className="w-20 h-20 rounded-full border-2 border-border object-cover" />
           </div>
-          <div className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Nombre</p>
-            <p className="text-sm text-foreground font-medium">{session.name}</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Key activa</p>
-            <p className="text-[11px] text-foreground font-mono">{session.key}</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Tipo de cuenta</p>
-            <p className="text-sm text-foreground font-medium flex items-center gap-1">
-              {session.type === "Premium" && <Zap className="w-3 h-3 text-amber-400" />}
-              {session.type}
-            </p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Duración</p>
-            <p className="text-sm text-foreground font-medium">{session.duration}</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-            <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">Tiempo restante</p>
-            <p className="text-sm text-foreground font-medium">{session.expiresAt ? (timeLeft || "Calculando...") : "Ilimitado"}</p>
-          </div>
+          {[
+            { label: "Nombre", value: session.name },
+            { label: "Key activa", value: session.key },
+            { label: "Tipo", value: session.type },
+            { label: "Duración", value: session.duration },
+            { label: "Tiempo restante", value: session.expiresAt ? (timeLeft || "Calculando...") : "Ilimitado" },
+          ].map(({ label, value }) => (
+            <div key={label} className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
+              <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">{label}</p>
+              <p className="text-sm text-foreground font-medium">{value}</p>
+            </div>
+          ))}
         </div>
       ),
     },
@@ -725,15 +408,15 @@ const ProxyConfig = () => {
       content: (
         <div className="space-y-3">
           {[
-            { label: "Protocolo de conexión", value: "HTTP / HTTPS / SOCKS5" },
-            { label: "Cifrado de datos", value: "AES-256-GCM" },
+            { label: "Protocolo", value: "HTTP / HTTPS / SOCKS5" },
+            { label: "Cifrado", value: "AES-256-GCM" },
             { label: "DNS primario", value: "1.1.1.1 (Cloudflare)" },
             { label: "DNS secundario", value: "8.8.8.8 (Google)" },
             { label: "Modo de túnel", value: "Split Tunneling" },
-            { label: "Compresión", value: "Activada (Brotli)" },
-            { label: "Keep-Alive", value: "Activado (60s)" },
-            { label: "Reintentos automáticos", value: "3 intentos" },
-            { label: "Tiempo de espera", value: "30 segundos" },
+            { label: "Compresión", value: "Brotli" },
+            { label: "Keep-Alive", value: "60s" },
+            { label: "Reintentos", value: "3" },
+            { label: "Timeout", value: "30s" },
           ].map(({ label, value }) => (
             <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
               <span className="text-[10px] text-muted-foreground">{label}</span>
@@ -749,51 +432,17 @@ const ProxyConfig = () => {
       title: "Términos y Condiciones",
       content: (
         <div className="space-y-3">
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">1. Uso Aceptable</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">El servicio de proxy está destinado exclusivamente para uso personal y legítimo. Queda prohibido utilizar el servicio para actividades ilegales, distribución de malware, ataques DDoS, o cualquier actividad que viole las leyes locales e internacionales.</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">2. Acceso y Keys</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">Las keys de acceso son personales e intransferibles. Compartir keys con terceros resultará en la suspensión inmediata del servicio sin previo aviso ni reembolso.</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">3. Disponibilidad</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">El servicio se proporciona "tal cual". No garantizamos disponibilidad del 100%. Se realizarán mantenimientos programados con previo aviso cuando sea posible.</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">4. Privacidad</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">No almacenamos registros de navegación ni actividad. Los datos de sesión se utilizan únicamente para gestionar el acceso y la duración del servicio.</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">5. Suspensión</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">Nos reservamos el derecho de suspender o cancelar cuentas que violen estos términos, sin obligación de reembolso o compensación.</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "policies",
-      icon: AlertTriangle,
-      title: "Políticas de Uso",
-      content: (
-        <div className="space-y-3">
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">Política de Privacidad</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">Respetamos tu privacidad. No recopilamos datos personales más allá de lo necesario para el funcionamiento del servicio. Tu nombre de usuario y key son los únicos datos almacenados durante la sesión activa.</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">Política de Reembolso</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">Las keys activadas no son reembolsables. Si experimentas problemas técnicos, contacta al administrador para recibir una key de reemplazo según la evaluación del caso.</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">Política de Seguridad</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">Todo el tráfico está cifrado con AES-256. Las conexiones se realizan a través de protocolos seguros (TLS 1.3). Monitoreamos intentos de acceso no autorizados para proteger la infraestructura.</p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30">
-            <h3 className="text-xs font-semibold text-foreground mb-2">Límites de Uso</h3>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">Cada key permite una conexión simultánea. El uso excesivo de ancho de banda puede resultar en limitación temporal de velocidad para garantizar la calidad del servicio para todos los usuarios.</p>
-          </div>
+          {[
+            { t: "1. Uso Aceptable", p: "El servicio está destinado para uso personal y legítimo. Queda prohibido cualquier uso ilegal." },
+            { t: "2. Keys", p: "Las keys son personales e intransferibles. Compartirlas resulta en suspensión inmediata." },
+            { t: "3. Disponibilidad", p: "Servicio proporcionado 'tal cual'. No garantizamos 100% de disponibilidad." },
+            { t: "4. Privacidad", p: "No almacenamos registros de navegación. Solo datos de sesión para gestionar acceso." },
+          ].map(({ t, p }) => (
+            <div key={t} className="bg-secondary/20 rounded-lg p-3 border border-border/30">
+              <h3 className="text-xs font-semibold text-foreground mb-1">{t}</h3>
+              <p className="text-[10px] text-muted-foreground leading-relaxed">{p}</p>
+            </div>
+          ))}
         </div>
       ),
     },
@@ -802,39 +451,27 @@ const ProxyConfig = () => {
       icon: Code,
       title: "Desarrollador",
       content: (
-        <div className="space-y-4">
-          <div className="flex flex-col items-center text-center py-4">
-            <div className="w-20 h-20 rounded-full bg-secondary/50 border-2 border-border/50 flex items-center justify-center mb-3 shadow-lg">
-              <Code className="w-8 h-8 text-foreground" />
+        <div className="space-y-3">
+          <div className="flex flex-col items-center text-center py-3">
+            <div className="w-16 h-16 rounded-full bg-secondary/50 border-2 border-border/50 flex items-center justify-center mb-2">
+              <Code className="w-7 h-7 text-foreground" />
             </div>
             <div className="flex items-center gap-1.5">
-              <h3 className="text-base font-semibold text-foreground">Modifaxff Oficial</h3>
-              <VerifiedBadge className="w-5 h-5" />
+              <h3 className="text-sm font-semibold text-foreground">Modifaxff Oficial</h3>
+              <VerifiedBadge className="w-4 h-4" />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Desarrollador y Creador</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Desarrollador y Creador</p>
           </div>
-          <div className="space-y-2">
-            {[
-              { label: "Rol", value: "Desarrollador Principal" },
-              { label: "Especialidad", value: "Redes y Proxy" },
-              { label: "Plataforma", value: "Conexión Proxy v2.4" },
-              { label: "Arquitectura", value: "Cliente-Servidor" },
-              { label: "Stack", value: "React + TypeScript" },
-              { label: "Base de datos", value: "Cloud Database" },
-              { label: "Cifrado", value: "AES-256-GCM" },
-              { label: "Protocolo", value: "HTTPS / SOCKS5" },
-            ].map(({ label, value }) => (
-              <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-                <span className="text-[10px] text-muted-foreground">{label}</span>
-                <span className="text-[10px] text-foreground font-medium">{value}</span>
-              </div>
-            ))}
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-4 border border-border/30 text-center">
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              Este sistema fue diseñado y desarrollado por Modifaxff Oficial. Todos los derechos reservados. Queda prohibida la reproducción total o parcial sin autorización expresa del desarrollador.
-            </p>
-          </div>
+          {[
+            { label: "Plataforma", value: "Conexión Proxy v2.4" },
+            { label: "Stack", value: "React + TypeScript" },
+            { label: "Cifrado", value: "AES-256-GCM" },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
+              <span className="text-[10px] text-muted-foreground">{label}</span>
+              <span className="text-[10px] text-foreground font-medium">{value}</span>
+            </div>
+          ))}
         </div>
       ),
     },
@@ -846,14 +483,10 @@ const ProxyConfig = () => {
         <div className="space-y-3">
           {[
             { label: "TCP Fast Open", value: "Habilitado" },
-            { label: "ECN (Explicit Congestion)", value: "Activado" },
-            { label: "BBR Congestion Control", value: "Habilitado" },
+            { label: "BBR Congestion", value: "Habilitado" },
             { label: "IPv6 Dual Stack", value: "Desactivado" },
-            { label: "PMTU Discovery", value: "Automático" },
-            { label: "Socket Buffer", value: "256KB Tx / 512KB Rx" },
-            { label: "TCP Keepalive Interval", value: "30s" },
-            { label: "Max Retransmissions", value: "5" },
-            { label: "Nagle Algorithm", value: "Desactivado (Low Latency)" },
+            { label: "Socket Buffer", value: "256KB / 512KB" },
+            { label: "Nagle Algorithm", value: "Off (Low Latency)" },
           ].map(({ label, value }) => (
             <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
               <span className="text-[10px] text-muted-foreground">{label}</span>
@@ -868,20 +501,11 @@ const ProxyConfig = () => {
       icon: FileText,
       title: "Registro de Actividad",
       content: (
-        <div className="space-y-3">
-          <div className="bg-secondary/20 rounded-lg p-3 border border-border/30 font-mono text-[9px] space-y-1.5 max-h-60 overflow-y-auto">
-            <p><span className="text-emerald-400">[{new Date().toLocaleTimeString()}]</span> <span className="text-foreground/60">Sesión iniciada — Usuario: {session.name}</span></p>
-            <p><span className="text-emerald-400">[{new Date(Date.now() - 120000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Handshake TLS completado</span></p>
-            <p><span className="text-blue-400">[{new Date(Date.now() - 300000).toLocaleTimeString()}]</span> <span className="text-foreground/60">DNS query → 1.1.1.1 resuelto en 3ms</span></p>
-            <p><span className="text-emerald-400">[{new Date(Date.now() - 600000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Rotación de cipher suite completada</span></p>
-            <p><span className="text-amber-400">[{new Date(Date.now() - 900000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Reconexión automática — nodo optimizado</span></p>
-            <p><span className="text-emerald-400">[{new Date(Date.now() - 1800000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Anti-DPI bypass activado</span></p>
-            <p><span className="text-blue-400">[{new Date(Date.now() - 3600000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Verificación de integridad del túnel: OK</span></p>
-            <p><span className="text-emerald-400">[{new Date(Date.now() - 7200000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Certificado SSL verificado — SHA-256</span></p>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-3 border border-border/30">
-            <p className="text-[10px] text-muted-foreground leading-relaxed">Los registros se almacenan temporalmente durante la sesión activa. No se guardan datos de navegación ni contenido transmitido.</p>
-          </div>
+        <div className="bg-secondary/20 rounded-lg p-3 border border-border/30 font-mono text-[9px] space-y-1.5 max-h-60 overflow-y-auto">
+          <p><span className="text-emerald-400">[{new Date().toLocaleTimeString()}]</span> <span className="text-foreground/60">Sesión iniciada — {session.name}</span></p>
+          <p><span className="text-emerald-400">[{new Date(Date.now() - 120000).toLocaleTimeString()}]</span> <span className="text-foreground/60">TLS handshake OK</span></p>
+          <p><span className="text-blue-400">[{new Date(Date.now() - 300000).toLocaleTimeString()}]</span> <span className="text-foreground/60">DNS → 1.1.1.1 (3ms)</span></p>
+          <p><span className="text-amber-400">[{new Date(Date.now() - 900000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Auto-reconnect</span></p>
         </div>
       ),
     },
@@ -892,21 +516,18 @@ const ProxyConfig = () => {
       content: (
         <div className="space-y-3">
           {[
-            { test: "Ping al servidor proxy", result: "8ms", status: "OK" },
-            { test: "Resolución DNS", result: "3ms", status: "OK" },
-            { test: "Verificación TLS", result: "Certificado válido", status: "OK" },
-            { test: "Detección de ISP throttle", result: "No detectado", status: "OK" },
-            { test: "Puerto 443 (HTTPS)", result: "Abierto", status: "OK" },
-            { test: "Puerto 8080 (HTTP)", result: "Abierto", status: "OK" },
-            { test: "Puerto 1080 (SOCKS5)", result: "Abierto", status: "OK" },
-            { test: "IPv6 Connectivity", result: "No disponible", status: "WARN" },
-            { test: "WebSocket Upgrade", result: "Soportado", status: "OK" },
-          ].map(({ test, result, status }) => (
+            { test: "Ping proxy", result: "8ms", ok: true },
+            { test: "DNS resolution", result: "3ms", ok: true },
+            { test: "TLS cert", result: "Valid", ok: true },
+            { test: "Port 443", result: "Open", ok: true },
+            { test: "Port 8080", result: "Open", ok: true },
+            { test: "IPv6", result: "N/A", ok: false },
+          ].map(({ test, result, ok }) => (
             <div key={test} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
               <span className="text-[10px] text-muted-foreground">{test}</span>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-foreground font-medium font-mono">{result}</span>
-                <div className={`w-2 h-2 rounded-full ${status === "OK" ? "bg-emerald-500" : "bg-amber-500"}`} />
+                <span className="text-[10px] text-foreground font-mono">{result}</span>
+                <div className={`w-2 h-2 rounded-full ${ok ? "bg-emerald-500" : "bg-amber-500"}`} />
               </div>
             </div>
           ))}
@@ -919,7 +540,7 @@ const ProxyConfig = () => {
     <div className="space-y-4">
       <div className="animate-fade-in-up">
         <h1 className="text-lg font-semibold text-foreground">Configuración</h1>
-        <p className="text-xs text-muted-foreground">Ajustes, políticas y más</p>
+        <p className="text-xs text-muted-foreground">Ajustes y más</p>
       </div>
 
       {settingsSection === null ? (
@@ -928,10 +549,10 @@ const ProxyConfig = () => {
             <button
               key={id}
               onClick={() => setSettingsSection(id)}
-              className="w-full glass-card p-4 flex items-center justify-between hover:bg-card/90 active:scale-[0.98] transition-all"
+              className="w-full glass-card p-3.5 flex items-center justify-between hover:bg-card/90 active:scale-[0.98] transition-all"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-secondary/50 border border-border/30 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-secondary/50 border border-border/30 flex items-center justify-center">
                   <Icon className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <span className="text-sm text-foreground font-medium">{title}</span>
@@ -957,13 +578,6 @@ const ProxyConfig = () => {
           </div>
         </div>
       )}
-    </div>
-  );
-
-  // Tab bar icon component
-  const TabIcon = ({ active, children }: { active: boolean; children: React.ReactNode }) => (
-    <div className={`flex flex-col items-center gap-0.5 transition-colors ${active ? "text-foreground" : "text-muted-foreground"}`}>
-      {children}
     </div>
   );
 
