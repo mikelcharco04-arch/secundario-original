@@ -98,18 +98,8 @@ const ProxyConfig = () => {
   // Game toggles
   const [noRecoil, setNoRecoil] = useState(false);
   const [autoAim, setAutoAim] = useState(false);
-  const [bugMiraX2, setBugMiraX2] = useState(false);
   const [fovEnabled, setFovEnabled] = useState(false);
   const [fovSize, setFovSize] = useState(120);
-  const [aimSmooth, setAimSmooth] = useState(50);
-  const [firerate, setFirerate] = useState(70);
-  const [sensitivity, setSensitivity] = useState(40);
-  const [headshot, setHeadshot] = useState(false);
-  const [antiKnock, setAntiKnock] = useState(false);
-  const [speedHack, setSpeedHack] = useState(false);
-  const [wallHack, setWallHack] = useState(false);
-  const [aimLock, setAimLock] = useState(false);
-  const [damageBoost, setDamageBoost] = useState(60);
 
   useEffect(() => {
     const checkSession = async () => {
