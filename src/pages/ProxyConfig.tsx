@@ -54,35 +54,7 @@ const FREEFIRE_METHODS = [
   "https://www.youtube.com/results?search_query=free+fire+download",
 ];
 
-const SERVERS = [
-  { id: 1, name: "US East 1", host: "us-east1.proxy.net", port: "8080", user: "proxy_us1", pass: "Xk9mP2nQ" },
-  { id: 2, name: "US East 2", host: "us-east2.proxy.net", port: "8081", user: "proxy_us2", pass: "Bv3rT7wZ" },
-  { id: 3, name: "US West 1", host: "us-west1.proxy.net", port: "8080", user: "proxy_usw1", pass: "Lm4sD8fG" },
-  { id: 4, name: "US West 2", host: "us-west2.proxy.net", port: "3128", user: "proxy_usw2", pass: "Hn6jK1pY" },
-  { id: 5, name: "Brasil 1", host: "br-sao1.proxy.net", port: "8080", user: "proxy_br1", pass: "Qw5eR9tU" },
-  { id: 6, name: "Brasil 2", host: "br-rio1.proxy.net", port: "8081", user: "proxy_br2", pass: "Jc2xV6bN" },
-  { id: 7, name: "México 1", host: "mx-cdmx1.proxy.net", port: "8080", user: "proxy_mx1", pass: "Fg7hY3kL" },
-  { id: 8, name: "México 2", host: "mx-gdl1.proxy.net", port: "3128", user: "proxy_mx2", pass: "Zp8qA4sD" },
-  { id: 9, name: "Colombia", host: "co-bog1.proxy.net", port: "8080", user: "proxy_co1", pass: "Wt1rE5uI" },
-  { id: 10, name: "Argentina", host: "ar-bue1.proxy.net", port: "8081", user: "proxy_ar1", pass: "Oy6pA2sD" },
-  { id: 11, name: "Chile", host: "cl-scl1.proxy.net", port: "8080", user: "proxy_cl1", pass: "Mf3gH7jK" },
-  { id: 12, name: "Perú", host: "pe-lim1.proxy.net", port: "3128", user: "proxy_pe1", pass: "Nb4vC8xZ" },
-  { id: 13, name: "España", host: "es-mad1.proxy.net", port: "8080", user: "proxy_es1", pass: "Lk9mD1fG" },
-  { id: 14, name: "Alemania 1", host: "de-fra1.proxy.net", port: "8080", user: "proxy_de1", pass: "Rh5jW3nQ" },
-  { id: 15, name: "Alemania 2", host: "de-ber1.proxy.net", port: "8081", user: "proxy_de2", pass: "Tu7eY4pI" },
-  { id: 16, name: "Francia", host: "fr-par1.proxy.net", port: "8080", user: "proxy_fr1", pass: "Sa2dF6gH" },
-  { id: 17, name: "UK London", host: "uk-lon1.proxy.net", port: "3128", user: "proxy_uk1", pass: "Qj8kL1zX" },
-  { id: 18, name: "Países Bajos", host: "nl-ams1.proxy.net", port: "8080", user: "proxy_nl1", pass: "Cv3bN7mQ" },
-  { id: 19, name: "Japón", host: "jp-tky1.proxy.net", port: "8080", user: "proxy_jp1", pass: "Wp4eR8tY" },
-  { id: 20, name: "Corea del Sur", host: "kr-sel1.proxy.net", port: "8081", user: "proxy_kr1", pass: "Ux6iO2pA" },
-  { id: 21, name: "Singapur", host: "sg-sin1.proxy.net", port: "8080", user: "proxy_sg1", pass: "Hd5fG9jK" },
-  { id: 22, name: "India", host: "in-mum1.proxy.net", port: "3128", user: "proxy_in1", pass: "Bl7mN3vC" },
-  { id: 23, name: "Australia", host: "au-syd1.proxy.net", port: "8080", user: "proxy_au1", pass: "Zx1cV5bN" },
-  { id: 24, name: "Canadá", host: "ca-tor1.proxy.net", port: "8081", user: "proxy_ca1", pass: "Km8jH2gF" },
-  { id: 25, name: "Sudáfrica", host: "za-jnb1.proxy.net", port: "8080", user: "proxy_za1", pass: "Py4tR6eW" },
-  { id: 26, name: "Rusia", host: "ru-mow1.proxy.net", port: "3128", user: "proxy_ru1", pass: "Qi9oP1aS" },
-  { id: 27, name: "Turquía", host: "tr-ist1.proxy.net", port: "8080", user: "proxy_tr1", pass: "Dj3fG7hK" },
-];
+// Server modules replaced with advanced exploit modules
 
 const ProxyConfig = () => {
   const navigate = useNavigate();
