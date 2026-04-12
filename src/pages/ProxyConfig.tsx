@@ -9,7 +9,8 @@ import {
   Lock, User, KeyRound, Power, LogOut, Gamepad2, Loader2,
   Shield, Activity, Zap, Eye, ChevronRight, Cpu, HardDrive,
   Home, Settings, FileText, UserCircle, Code, AlertTriangle,
-  Copy, Check, ChevronDown, Crosshair, Target
+  Copy, Check, ChevronDown, Crosshair, Target, Gauge, Ghost,
+  Bolt, Flame, Radar, ScanLine, Layers, BarChart3
 } from "lucide-react";
 
 interface Session {
@@ -100,6 +101,12 @@ const ProxyConfig = () => {
   const [autoAim, setAutoAim] = useState(false);
   const [fovEnabled, setFovEnabled] = useState(false);
   const [fovSize, setFovSize] = useState(120);
+  const [speedHack, setSpeedHack] = useState(false);
+  const [wallHack, setWallHack] = useState(false);
+  // Performance sliders
+  const [aimSmooth, setAimSmooth] = useState(50);
+  const [fireRate, setFireRate] = useState(30);
+  const [sensitivity, setSensitivity] = useState(60);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -228,6 +235,25 @@ const ProxyConfig = () => {
     </div>
   );
 
+  // Performance Slider component
+  const PerfSlider = ({ label, icon, value, onChange, unit = "%" }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; unit?: string }) => (
+    <div className="rounded-xl px-4 py-3 bg-secondary/20 border border-border/20 transition-all duration-300">
+      <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground">{icon}</span>
+          <span className="text-xs text-muted-foreground font-medium">{label}</span>
+        </div>
+        <span className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}{unit}</span>
+      </div>
+      <input
+        type="range" min={0} max={100} value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full h-1.5 rounded-full appearance-none cursor-pointer transition-all"
+        style={{ background: `linear-gradient(to right, hsl(var(--primary)) ${value}%, hsl(var(--secondary)) ${value}%)` }}
+      />
+    </div>
+  );
+
   const renderHome = () => (
     <div className="space-y-4">
       {/* Header */}
@@ -262,15 +288,16 @@ const ProxyConfig = () => {
         )}
       </button>
 
-      {/* Modules */}
+      {/* Combat Modules */}
       <div className="glass-card p-4 animate-fade-in-up space-y-3" style={{ animationDelay: "0.05s" }}>
         <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-1">
           <Crosshair className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Módulos</span>
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Combat Modules</span>
         </div>
-
         <AnimatedToggle label="No Recoil" icon={<Shield className="w-4 h-4" />} value={noRecoil} onChange={setNoRecoil} />
         <AnimatedToggle label="Auto Apuntado" icon={<Target className="w-4 h-4" />} value={autoAim} onChange={setAutoAim} />
+        <AnimatedToggle label="Speed Hack" icon={<Bolt className="w-4 h-4" />} value={speedHack} onChange={setSpeedHack} />
+        <AnimatedToggle label="Wall Hack" icon={<Ghost className="w-4 h-4" />} value={wallHack} onChange={setWallHack} />
       </div>
 
       {/* FOV Section */}
@@ -279,14 +306,61 @@ const ProxyConfig = () => {
           <Eye className="w-4 h-4 text-muted-foreground" />
           <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Field of View</span>
         </div>
-
         <AnimatedToggle label="FOV Overlay" icon={<Eye className="w-4 h-4" />} value={fovEnabled} onChange={setFovEnabled} />
-
         {fovEnabled && (
           <div className="animate-fade-in-up">
             <FovSlider value={fovSize} onChange={setFovSize} />
           </div>
         )}
+      </div>
+
+      {/* Performance Tuning */}
+      <div className="glass-card p-4 animate-fade-in-up space-y-3" style={{ animationDelay: "0.15s" }}>
+        <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-1">
+          <Gauge className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Performance Tuning</span>
+        </div>
+        <PerfSlider label="Aim Smoothness" icon={<ScanLine className="w-3.5 h-3.5" />} value={aimSmooth} onChange={setAimSmooth} />
+        <PerfSlider label="Fire Rate Boost" icon={<Flame className="w-3.5 h-3.5" />} value={fireRate} onChange={setFireRate} />
+        <PerfSlider label="Sensitivity" icon={<Radar className="w-3.5 h-3.5" />} value={sensitivity} onChange={setSensitivity} />
+      </div>
+
+      {/* Network Status Panel */}
+      <div className="glass-card p-4 animate-fade-in-up space-y-3" style={{ animationDelay: "0.2s" }}>
+        <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-1">
+          <Activity className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Network Status</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { label: "Latency", value: "8ms", icon: <Zap className="w-3 h-3" /> },
+            { label: "Uptime", value: "99.9%", icon: <Activity className="w-3 h-3" /> },
+            { label: "Tunnel", value: "Active", icon: <Lock className="w-3 h-3" /> },
+          ].map(({ label, value, icon }) => (
+            <div key={label} className="bg-secondary/20 rounded-lg p-2.5 border border-border/20 text-center">
+              <div className="flex justify-center text-muted-foreground mb-1">{icon}</div>
+              <p className="text-[10px] text-foreground font-mono font-semibold">{value}</p>
+              <p className="text-[8px] text-muted-foreground mt-0.5">{label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Packet Injector Console */}
+      <div className="glass-card p-4 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
+        <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-3">
+          <Layers className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Packet Injector</span>
+        </div>
+        <div className="bg-background/60 rounded-lg p-3 border border-border/30 font-mono text-[9px] space-y-1 max-h-32 overflow-y-auto">
+          <p><span className="text-primary">root@proxy:~$</span> <span className="text-foreground/70">inject --module combat.so --pid 1247</span></p>
+          <p className="text-muted-foreground/60">[OK] Module loaded: combat.so (v3.2.1)</p>
+          <p><span className="text-primary">root@proxy:~$</span> <span className="text-foreground/70">set recoil_offset 0x00</span></p>
+          <p className="text-muted-foreground/60">[OK] Memory patched @ 0x7FFA3B20</p>
+          <p><span className="text-primary">root@proxy:~$</span> <span className="text-foreground/70">hook render_pipeline --wall true</span></p>
+          <p className="text-muted-foreground/60">[OK] Render hook active — entities visible</p>
+          <p><span className="text-primary">root@proxy:~$</span> <span className="text-foreground/70 animate-pulse">_</span></p>
+        </div>
       </div>
 
       {/* FOV Circle Overlay */}
