@@ -252,6 +252,7 @@ const ProxyConfig = () => {
         className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
         style={{
           background: `linear-gradient(to right, hsl(var(--primary)) ${((value - 40) / 260) * 100}%, hsl(var(--secondary)) ${((value - 40) / 260) * 100}%)`,
+          touchAction: "none",
         }}
       />
     </div>
