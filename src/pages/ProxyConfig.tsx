@@ -405,56 +405,71 @@ const ProxyConfig = () => {
   const renderServers = () => (
     <div className="space-y-4">
       <div className="animate-fade-in-up">
-        <h1 className="text-lg font-semibold text-foreground">Servidores</h1>
-        <p className="text-xs text-muted-foreground">{SERVERS.length} servidores disponibles</p>
+        <h1 className="text-lg font-semibold text-foreground">Módulos Avanzados</h1>
+        <p className="text-xs text-muted-foreground">Exploit Engine v3.8 — Runtime Patches</p>
       </div>
 
-      <div className="space-y-2 max-h-[calc(100vh-180px)] overflow-y-auto pr-0.5 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
-        {SERVERS.map((srv) => (
-          <div key={srv.id} className="glass-card overflow-hidden">
-            <button
-              onClick={() => setExpandedServer(expandedServer === srv.id ? null : srv.id)}
-              className="w-full p-3 flex items-center justify-between active:scale-[0.99] transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-secondary/50 border border-border/30 flex items-center justify-center">
-                  <Server className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <div className="text-left">
-                  <p className="text-sm text-foreground font-medium">{srv.name}</p>
-                  <p className="text-[10px] text-muted-foreground font-mono">{srv.host}:{srv.port}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedServer === srv.id ? "rotate-180" : ""}`} />
-              </div>
-            </button>
-            {expandedServer === srv.id && (
-              <div className="px-3 pb-3 space-y-2 border-t border-border/30 pt-3">
-                {[
-                  { label: "Servidor", value: srv.host, id: `host-${srv.id}` },
-                  { label: "Puerto", value: srv.port, id: `port-${srv.id}` },
-                  { label: "Usuario", value: srv.user, id: `user-${srv.id}` },
-                  { label: "Contraseña", value: srv.pass, id: `pass-${srv.id}` },
-                ].map(({ label, value, id }) => (
-                  <div key={id} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-                    <div>
-                      <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider">{label}</p>
-                      <p className="text-[11px] text-foreground font-mono font-medium">{value}</p>
-                    </div>
-                    <button
-                      onClick={() => copyToClipboard(value, id)}
-                      className="p-1.5 rounded-lg hover:bg-secondary/80 transition-colors active:scale-95"
-                    >
-                      {copiedField === id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+      {/* Memory & Protection */}
+      <div className="glass-card p-4 animate-fade-in-up space-y-3" style={{ animationDelay: "0.05s" }}>
+        <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-1">
+          <Cpu className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Memory & Protection</span>
+        </div>
+        <AnimatedToggle label="Memory Patcher" icon={<HardDrive className="w-4 h-4" />} value={memoryPatcher} onChange={setMemoryPatcher} />
+        <AnimatedToggle label="Anti-Ban Shield" icon={<Shield className="w-4 h-4" />} value={antiBan} onChange={setAntiBan} />
+        <AnimatedToggle label="Kernel Bypass" icon={<Cpu className="w-4 h-4" />} value={kernelBypass} onChange={setKernelBypass} />
+      </div>
+
+      {/* Stealth & Evasion */}
+      <div className="glass-card p-4 animate-fade-in-up space-y-3" style={{ animationDelay: "0.1s" }}>
+        <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-1">
+          <Ghost className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Stealth & Evasion</span>
+        </div>
+        <AnimatedToggle label="Root Cloak" icon={<Lock className="w-4 h-4" />} value={rootCloak} onChange={setRootCloak} />
+        <AnimatedToggle label="Packet Spoofer" icon={<Radio className="w-4 h-4" />} value={packetSpoof} onChange={setPacketSpoof} />
+        <AnimatedToggle label="Process Hider" icon={<Eye className="w-4 h-4" />} value={procHider} onChange={setProcHider} />
+      </div>
+
+      {/* Injection Engine */}
+      <div className="glass-card p-4 animate-fade-in-up space-y-3" style={{ animationDelay: "0.15s" }}>
+        <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-1">
+          <Code className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Injection Engine</span>
+        </div>
+        <AnimatedToggle label="DEX Injector" icon={<Layers className="w-4 h-4" />} value={dexInjector} onChange={setDexInjector} />
+        <AnimatedToggle label="SSL Pinning Bypass" icon={<KeyRound className="w-4 h-4" />} value={sslPinning} onChange={setSslPinning} />
+        <AnimatedToggle label="HWID Spoofer" icon={<Server className="w-4 h-4" />} value={hwIdSpoof} onChange={setHwIdSpoof} />
+      </div>
+
+      {/* Runtime Tuning */}
+      <div className="glass-card p-4 animate-fade-in-up space-y-3" style={{ animationDelay: "0.2s" }}>
+        <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-1">
+          <Gauge className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Runtime Tuning</span>
+        </div>
+        <PerfSlider label="Heap Allocation" icon={<BarChart3 className="w-3.5 h-3.5" />} value={heapAlloc} onChange={setHeapAlloc} unit="MB" />
+        <PerfSlider label="Thread Priority" icon={<Zap className="w-3.5 h-3.5" />} value={threadPriority} onChange={setThreadPriority} />
+        <PerfSlider label="Injection Delay" icon={<Clock className="w-3.5 h-3.5" />} value={injectionDelay} onChange={setInjectionDelay} unit="ms" />
+      </div>
+
+      {/* Live Exploit Console */}
+      <div className="glass-card p-4 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
+        <div className="flex items-center gap-2 pb-1 border-b border-border/20 mb-3">
+          <AlertTriangle className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">Exploit Console</span>
+        </div>
+        <div className="bg-background/60 rounded-lg p-3 border border-border/30 font-mono text-[9px] space-y-1 max-h-36 overflow-y-auto">
+          <p><span className="text-primary">exploit@kernel:~$</span> <span className="text-foreground/70">load --module anti_ban.ko</span></p>
+          <p className="text-muted-foreground/60">[OK] Kernel module loaded @ ring0</p>
+          <p><span className="text-primary">exploit@kernel:~$</span> <span className="text-foreground/70">patch mem 0x7FFA3B20 --nop</span></p>
+          <p className="text-muted-foreground/60">[OK] 48 bytes patched — signature bypassed</p>
+          <p><span className="text-primary">exploit@kernel:~$</span> <span className="text-foreground/70">spoof hwid --random</span></p>
+          <p className="text-muted-foreground/60">[OK] HWID: A3F8-9C2D-7E1B-4F6A</p>
+          <p><span className="text-primary">exploit@kernel:~$</span> <span className="text-foreground/70">cloak --pid self --depth 3</span></p>
+          <p className="text-muted-foreground/60">[OK] Process hidden from 3 scanners</p>
+          <p><span className="text-primary">exploit@kernel:~$</span> <span className="text-foreground/70 animate-pulse">_</span></p>
+        </div>
       </div>
     </div>
   );
