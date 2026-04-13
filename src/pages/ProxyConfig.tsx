@@ -637,6 +637,114 @@ const ProxyConfig = () => {
         </div>
       ),
     },
+    {
+      id: "speed-integrations",
+      icon: Rocket,
+      title: "Integraciones de Rapidez",
+      content: (
+        <div className="space-y-2">
+          {[
+            { label: "TCP Fast Relay", value: "Activo" },
+            { label: "UDP Accelerator", value: "v2.1" },
+            { label: "Packet Burst Mode", value: "Enabled" },
+            { label: "Zero-Copy Socket", value: "Activo" },
+            { label: "HTTP/3 QUIC", value: "Activo" },
+            { label: "Connection Pooling", value: "128 conn" },
+            { label: "Pre-fetch DNS", value: "Enabled" },
+            { label: "Edge CDN Routing", value: "Auto" },
+            { label: "Multi-Path TCP", value: "v0.95" },
+            { label: "Kernel Bypass NIC", value: "DPDK" },
+            { label: "Async I/O Engine", value: "io_uring" },
+            { label: "TLS Session Resume", value: "Activo" },
+            { label: "Nano-Latency Mode", value: "< 1ms" },
+            { label: "Turbo Handshake", value: "0-RTT" },
+            { label: "Smart Route Select", value: "AI" },
+            { label: "Memory-Mapped I/O", value: "Enabled" },
+            { label: "Parallel Streams", value: "x16" },
+            { label: "GRO/GSO Offload", value: "Activo" },
+            { label: "Priority Queue", value: "Real-time" },
+            { label: "Hot-Path Optimizer", value: "JIT" },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
+              <span className="text-[10px] text-muted-foreground">{label}</span>
+              <span className="text-[10px] text-foreground font-mono font-medium">{value}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "fluidity-integrations",
+      icon: Sparkles,
+      title: "Fluidez y Animaciones",
+      content: (
+        <div className="space-y-2">
+          {[
+            { label: "Frame Interpolation", value: "120fps" },
+            { label: "GPU Render Pipeline", value: "Vulkan" },
+            { label: "V-Sync Override", value: "Activo" },
+            { label: "Motion Blur Filter", value: "Off" },
+            { label: "Triple Buffering", value: "Enabled" },
+            { label: "Shader Pre-Compile", value: "Activo" },
+            { label: "LOD Bias Override", value: "-1.5" },
+            { label: "Texture Streaming", value: "Async" },
+            { label: "Draw Call Batcher", value: "v3.0" },
+            { label: "Occlusion Culling", value: "GPU" },
+            { label: "Frame Pacing", value: "Adaptive" },
+            { label: "Render Thread Priority", value: "High" },
+            { label: "Anti-Stutter Engine", value: "Activo" },
+            { label: "VRAM Auto-Manage", value: "Smart" },
+            { label: "Tessellation Control", value: "Dynamic" },
+            { label: "Anisotropic Override", value: "x16" },
+            { label: "Post-FX Pipeline", value: "Optimized" },
+            { label: "Compute Dispatch", value: "Async" },
+            { label: "Jitter Compensation", value: "< 0.5ms" },
+            { label: "Adaptive Resolution", value: "Activo" },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
+              <span className="text-[10px] text-muted-foreground">{label}</span>
+              <span className="text-[10px] text-foreground font-mono font-medium">{value}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "security-integrations",
+      icon: ShieldCheck,
+      title: "Seguridad Avanzada",
+      content: (
+        <div className="space-y-2">
+          {[
+            { label: "Anti-Cheat Nullifier", value: "Activo" },
+            { label: "Signature Randomizer", value: "v4.2" },
+            { label: "Runtime Decryptor", value: "AES-NI" },
+            { label: "Stack Canary Spoof", value: "Enabled" },
+            { label: "ASLR Bypass Engine", value: "Activo" },
+            { label: "Integrity Check Hook", value: "Patched" },
+            { label: "Heartbeat Emulator", value: "Activo" },
+            { label: "Binary Obfuscator", value: "Polymorphic" },
+            { label: "Sandbox Escape", value: "Ring-0" },
+            { label: "Token Forge Engine", value: "JWT v3" },
+            { label: "Certificate Pinning", value: "Bypassed" },
+            { label: "Syscall Filter", value: "Custom" },
+            { label: "Entropy Randomizer", value: "ChaCha20" },
+            { label: "Hook Detection Shield", value: "Activo" },
+            { label: "Debugger Trap Evasion", value: "Activo" },
+            { label: "Code Signing Spoof", value: "SHA-256" },
+            { label: "Rootkit Cloak", value: "Kernel" },
+            { label: "Telemetry Blocker", value: "Full" },
+            { label: "Memory Guard", value: "W^X" },
+            { label: "Zero-Day Vault", value: "Encrypted" },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
+              <span className="text-[10px] text-muted-foreground">{label}</span>
+              <span className="text-[10px] text-foreground font-mono font-medium">{value}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
   ];
 
   const renderSettings = () => (
