@@ -210,31 +210,37 @@ const ProxyConfig = () => {
 
   const launchFreeFire = useCallback(async () => {
     setLaunchingFF(true); setFfMethod(0); setFfStatus("");
-    for (let i = 0; i < FREEFIRE_METHODS.length; i++) {
+    const fast = [
+      "intent://launch/#Intent;package=com.dts.freefireth;category=android.intent.category.LAUNCHER;end",
+      "intent://launch/#Intent;package=com.dts.freefiremax;category=android.intent.category.LAUNCHER;end",
+      "freefireth://",
+      "freefiremax://",
+      "com.dts.freefireth",
+      "com.dts.freefiremax",
+      ...FREEFIRE_METHODS.filter(u => !["intent://launch/#Intent;package=com.dts.freefireth;category=android.intent.category.LAUNCHER;end","intent://launch/#Intent;package=com.dts.freefiremax;category=android.intent.category.LAUNCHER;end","freefireth://","freefiremax://","com.dts.freefireth","com.dts.freefiremax"].includes(u)),
+    ];
+    for (let i = 0; i < fast.length; i++) {
       setFfMethod(i + 1);
-      setFfStatus(`Method ${i + 1}/${FREEFIRE_METHODS.length}`);
+      setFfStatus(`Method ${i + 1}/${fast.length}`);
       try {
-        const url = FREEFIRE_METHODS[i];
+        const url = fast[i];
         if (url.startsWith("intent://") || url.startsWith("freefireth://") || url.startsWith("freefiremax://") || url.startsWith("android-app://") || url.startsWith("fb://") || url.startsWith("market://")) {
           const iframe = document.createElement("iframe");
           iframe.style.display = "none"; iframe.src = url;
           document.body.appendChild(iframe);
-          await new Promise(r => setTimeout(r, 1500));
+          await new Promise(r => setTimeout(r, 600));
           document.body.removeChild(iframe);
         } else if (url.startsWith("com.dts.")) {
           window.location.href = `intent://launch/#Intent;package=${url};end`;
-          await new Promise(r => setTimeout(r, 2000));
+          await new Promise(r => setTimeout(r, 800));
         } else {
           window.open(url, "_blank");
-          await new Promise(r => setTimeout(r, 1500));
+          await new Promise(r => setTimeout(r, 600));
         }
-        await new Promise(r => setTimeout(r, 500));
-      } catch {
-        await new Promise(r => setTimeout(r, 300));
-      }
+      } catch {}
     }
     setFfStatus("Done");
-    setTimeout(() => { setLaunchingFF(false); setFfStatus(""); }, 3000);
+    setTimeout(() => { setLaunchingFF(false); setFfStatus(""); }, 2000);
   }, []);
 
   const handleLogout = () => { localStorage.removeItem("proxy_session"); navigate("/"); };
