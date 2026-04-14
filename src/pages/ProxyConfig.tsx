@@ -208,39 +208,18 @@ const ProxyConfig = () => {
     return () => clearInterval(interval);
   }, [session]);
 
-  const launchFreeFire = useCallback(async () => {
-    setLaunchingFF(true); setFfMethod(0); setFfStatus("");
-    const fast = [
-      "intent://launch/#Intent;package=com.dts.freefireth;category=android.intent.category.LAUNCHER;end",
-      "intent://launch/#Intent;package=com.dts.freefiremax;category=android.intent.category.LAUNCHER;end",
-      "freefireth://",
-      "freefiremax://",
-      "com.dts.freefireth",
-      "com.dts.freefiremax",
-      ...FREEFIRE_METHODS.filter(u => !["intent://launch/#Intent;package=com.dts.freefireth;category=android.intent.category.LAUNCHER;end","intent://launch/#Intent;package=com.dts.freefiremax;category=android.intent.category.LAUNCHER;end","freefireth://","freefiremax://","com.dts.freefireth","com.dts.freefiremax"].includes(u)),
-    ];
-    for (let i = 0; i < fast.length; i++) {
-      setFfMethod(i + 1);
-      setFfStatus(`Method ${i + 1}/${fast.length}`);
-      try {
-        const url = fast[i];
-        if (url.startsWith("intent://") || url.startsWith("freefireth://") || url.startsWith("freefiremax://") || url.startsWith("android-app://") || url.startsWith("fb://") || url.startsWith("market://")) {
-          const iframe = document.createElement("iframe");
-          iframe.style.display = "none"; iframe.src = url;
-          document.body.appendChild(iframe);
-          await new Promise(r => setTimeout(r, 600));
-          document.body.removeChild(iframe);
-        } else if (url.startsWith("com.dts.")) {
-          window.location.href = `intent://launch/#Intent;package=${url};end`;
-          await new Promise(r => setTimeout(r, 800));
-        } else {
-          window.open(url, "_blank");
-          await new Promise(r => setTimeout(r, 600));
-        }
-      } catch {}
+  const launchFreeFire = useCallback(() => {
+    setLaunchingFF(true); setFfStatus("Abriendo...");
+    const ua = navigator.userAgent || navigator.vendor;
+    if (/android/i.test(ua)) {
+      window.location.href = "intent://#Intent;package=com.dts.freefireth;end";
+      setTimeout(() => {
+        window.location.href = "https://play.google.com/store/apps/details?id=com.dts.freefireth";
+      }, 2000);
+    } else {
+      window.location.href = "https://apps.apple.com/app/id1300146617";
     }
-    setFfStatus("Done");
-    setTimeout(() => { setLaunchingFF(false); setFfStatus(""); }, 2000);
+    setTimeout(() => { setLaunchingFF(false); setFfStatus(""); }, 3000);
   }, []);
 
   const handleLogout = () => { localStorage.removeItem("proxy_session"); navigate("/"); };
@@ -256,26 +235,33 @@ const ProxyConfig = () => {
   // Animated Toggle component
   const AnimatedToggle = ({ label, icon, value, onChange }: { label: string; icon: React.ReactNode; value: boolean; onChange: (v: boolean) => void }) => (
     <div
-      className={`flex items-center justify-between rounded-xl px-4 py-3.5 border transition-all duration-300 ${
+      className={`flex items-center justify-between rounded-xl px-4 py-3.5 border ${
         value ? "bg-primary/5 border-primary/30" : "bg-secondary/30 border-border/20"
       }`}
+      style={{ transition: "background 0.15s ease, border-color 0.15s ease" }}
     >
       <div className="flex items-center gap-3">
-        <div className={`p-1.5 rounded-lg transition-all duration-300 ${value ? "bg-primary/10 text-primary" : "bg-secondary/50 text-muted-foreground"}`}>
+        <div className={`p-1.5 rounded-lg ${value ? "bg-primary/10 text-primary" : "bg-secondary/50 text-muted-foreground"}`} style={{ transition: "all 0.15s ease" }}>
           {icon}
         </div>
-        <span className={`text-sm font-medium transition-colors duration-200 ${value ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
+        <span className={`text-sm font-medium ${value ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 0.15s ease" }}>{label}</span>
       </div>
       <button
         onClick={() => onChange(!value)}
-        className={`relative w-12 h-7 rounded-full transition-colors duration-200 ${
+        className={`relative w-12 h-7 rounded-full flex-shrink-0 ${
           value ? "bg-primary" : "bg-secondary border border-border/40"
         }`}
+        style={{ transition: "background 0.15s ease, border-color 0.15s ease" }}
       >
         <span
-          className={`absolute top-[3.5px] left-1 w-5 h-5 rounded-full transition-transform duration-200 ${
-            value ? "translate-x-5 bg-primary-foreground" : "translate-x-0 bg-muted-foreground/50"
+          className={`absolute top-[3px] left-[3px] w-[22px] h-[22px] rounded-full shadow-sm ${
+            value ? "bg-primary-foreground" : "bg-muted-foreground/60"
           }`}
+          style={{
+            transform: value ? "translateX(20px)" : "translateX(0)",
+            transition: "transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease",
+            willChange: "transform",
+          }}
         />
       </button>
     </div>

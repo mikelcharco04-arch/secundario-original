@@ -172,7 +172,8 @@ const Login = () => {
               href="https://passwor-producto.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-foreground text-background font-semibold py-2.5 rounded-lg text-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center"
+              className="w-full bg-card/60 backdrop-blur-xl text-foreground font-semibold py-2.5 rounded-lg text-sm border border-border/40 hover:bg-card/80 active:scale-[0.98] transition-all flex items-center justify-center"
+              style={{ boxShadow: "0 0 20px rgba(255,255,255,0.04), inset 0 0 20px rgba(255,255,255,0.02)" }}
             >
               Obtén tu key con diamantes
             </a>
