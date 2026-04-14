@@ -67,6 +67,7 @@ input[type="range"] {
   appearance: none;
   outline: none;
   touch-action: none;
+  cursor: pointer;
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
