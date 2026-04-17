@@ -68,16 +68,38 @@ input[type="range"] {
   outline: none;
   touch-action: none;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  will-change: background;
+}
+input[type="range"].slider-fluid,
+input[type="range"].slider-fluid::-webkit-slider-thumb,
+input[type="range"].slider-fluid::-moz-range-thumb {
+  transition: none !important;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: transparent;
+}
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: transparent;
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 18px;
   height: 18px;
+  margin-top: -6px;
   border-radius: 50%;
   background: hsl(var(--foreground));
   cursor: pointer;
   border: none;
   box-shadow: 0 0 4px rgba(255,255,255,0.2);
+  will-change: transform;
+}
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.15);
 }
 input[type="range"]::-moz-range-thumb {
   width: 18px;
@@ -86,6 +108,10 @@ input[type="range"]::-moz-range-thumb {
   background: hsl(var(--foreground));
   cursor: pointer;
   border: none;
+  will-change: transform;
+}
+input[type="range"]:active::-moz-range-thumb {
+  transform: scale(1.15);
 }
 
 @keyframes pulse-glow {
