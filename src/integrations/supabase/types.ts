@@ -44,6 +44,72 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_orders: {
+        Row: {
+          amount: number
+          assigned_key: string | null
+          binance_order_id: string | null
+          checkout_url: string | null
+          created_at: string
+          currency: string
+          deeplink: string | null
+          duration: string
+          email: string | null
+          id: string
+          key_type: string
+          merchant_trade_no: string
+          paid_at: string | null
+          plan_id: string
+          plan_label: string
+          prepay_id: string | null
+          qr_url: string | null
+          raw_webhook: Json | null
+          status: string
+        }
+        Insert: {
+          amount: number
+          assigned_key?: string | null
+          binance_order_id?: string | null
+          checkout_url?: string | null
+          created_at?: string
+          currency?: string
+          deeplink?: string | null
+          duration: string
+          email?: string | null
+          id?: string
+          key_type: string
+          merchant_trade_no: string
+          paid_at?: string | null
+          plan_id: string
+          plan_label: string
+          prepay_id?: string | null
+          qr_url?: string | null
+          raw_webhook?: Json | null
+          status?: string
+        }
+        Update: {
+          amount?: number
+          assigned_key?: string | null
+          binance_order_id?: string | null
+          checkout_url?: string | null
+          created_at?: string
+          currency?: string
+          deeplink?: string | null
+          duration?: string
+          email?: string | null
+          id?: string
+          key_type?: string
+          merchant_trade_no?: string
+          paid_at?: string | null
+          plan_id?: string
+          plan_label?: string
+          prepay_id?: string | null
+          qr_url?: string | null
+          raw_webhook?: Json | null
+          status?: string
+        }
+        Relationships: []
+      }
       proxy_keys: {
         Row: {
           activated_at: string | null
