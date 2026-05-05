@@ -1,7 +1,1 @@
-project_id = "exlqskmdgspdxiydczzc"
-
-[functions.binance-create-order]
-verify_jwt = false
-
-[functions.binance-check-order]
-verify_jwt = false
+project_id = "wmvyfiizwrrubtjmdznn"
