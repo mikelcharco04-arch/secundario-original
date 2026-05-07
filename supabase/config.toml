@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.payment-submit]
 verify_jwt = false
+
+[functions.telegram-setup]
+verify_jwt = false
