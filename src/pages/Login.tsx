@@ -77,7 +77,7 @@ const Login = () => {
             </div>
           </div>
           <div className="flex items-center gap-1.5 mb-1">
-            <h1 className="text-lg font-bold text-foreground tracking-tight">Conexión Proxy</h1>
+            <h1 className="text-lg font-bold text-foreground tracking-tight">BoykaFFX7 & HFFX4</h1>
             <VerifiedBadge />
           </div>
           <p className="text-[10px] text-muted-foreground/70 tracking-widest uppercase">Secure Gateway v2.4</p>
@@ -160,7 +160,7 @@ const Login = () => {
               className="w-full bg-card/60 backdrop-blur-xl text-foreground font-semibold py-2.5 rounded-lg text-sm border border-border/40 hover:bg-card/80 active:scale-[0.98] transition-all flex items-center justify-center"
               style={{ boxShadow: "0 0 20px rgba(255,255,255,0.04), inset 0 0 20px rgba(255,255,255,0.02)" }}
             >
-              Comprar key con Binance Pay
+              Comprar Key
             </button>
           </form>
         </div>
