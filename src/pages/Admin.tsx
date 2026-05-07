@@ -9,14 +9,16 @@ import {
   KeyRound, Plus, LogOut, Trash2, Copy, Check,
   Users, Ban, UserX, Clock, Terminal, Shield, Activity,
   Database, Minus, Hash, Zap, Wifi,
-  Server, Globe, Signal, Power, ChevronRight, Lock
+  Server, Globe, Signal, Power, ChevronRight, Lock, CreditCard, X
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Admin = () => {
   const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem("admin_auth") === "true");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"keys" | "users" | "generate" | "stats">("generate");
+  const [activeTab, setActiveTab] = useState<"keys" | "users" | "generate" | "stats" | "payments">("generate");
+  const [payments, setPayments] = useState<any[]>([]);
 
   const [keyType, setKeyType] = useState<"Normal" | "Premium">("Normal");
   const [duration, setDuration] = useState("7 días");
@@ -26,9 +28,14 @@ const Admin = () => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const refreshData = useCallback(async () => {
-    const [k, u] = await Promise.all([getKeys(), getActiveUsers()]);
+    const [k, u, p] = await Promise.all([
+      getKeys(),
+      getActiveUsers(),
+      supabase.from("payment_requests").select("*").order("created_at", { ascending: false }).limit(50),
+    ]);
     setKeys(k);
     setUsers(u);
+    setPayments(p.data || []);
   }, []);
 
   useEffect(() => {
@@ -253,6 +260,7 @@ const Admin = () => {
             { id: "generate", label: "Generar", icon: Plus },
             { id: "keys", label: "Keys", icon: KeyRound },
             { id: "users", label: "Usuarios", icon: Users },
+            { id: "payments", label: "Pagos", icon: CreditCard },
             { id: "stats", label: "Monitor", icon: Signal },
           ] as const).map(({ id, label, icon: Icon }) => (
             <button
@@ -763,6 +771,88 @@ const Admin = () => {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Payments Tab */}
+        {activeTab === "payments" && (
+          <div className="animate-fade-in-up space-y-2" style={{ animationDelay: "0.15s" }}>
+            <div className="glass-card p-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-mono font-medium">Pagos [{payments.length}]</span>
+              </div>
+              <div className="flex gap-2 text-[10px] font-mono">
+                <span className="text-amber-400">Pending: {payments.filter(p => p.status === "pending").length}</span>
+                <span className="text-emerald-400">OK: {payments.filter(p => p.status === "approved").length}</span>
+                <span className="text-red-400">No: {payments.filter(p => p.status === "rejected").length}</span>
+              </div>
+            </div>
+            {payments.length === 0 && (
+              <div className="glass-card p-6 text-center text-xs text-muted-foreground">Sin solicitudes</div>
+            )}
+            {payments.map((p) => {
+              const statusColor = p.status === "approved" ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/10"
+                : p.status === "rejected" ? "text-red-400 border-red-400/30 bg-red-400/10"
+                : "text-amber-400 border-amber-400/30 bg-amber-400/10";
+              const approve = async () => {
+                if (p.status !== "pending") return;
+                // pick or generate key
+                const { data: avail } = await supabase.from("proxy_keys").select("*")
+                  .eq("status", "Activa").eq("type", p.key_type).eq("duration", p.duration).limit(1).maybeSingle();
+                let key = avail?.key;
+                if (!key) {
+                  const newKeys = await generateKeys(1, p.key_type, p.duration);
+                  key = newKeys[0].key;
+                }
+                await supabase.from("payment_requests").update({
+                  status: "approved", delivered_key: key,
+                  resolved_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+                }).eq("id", p.id);
+                await refreshData();
+              };
+              const reject = async () => {
+                if (p.status !== "pending") return;
+                await supabase.from("payment_requests").update({
+                  status: "rejected",
+                  resolved_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+                }).eq("id", p.id);
+                await refreshData();
+              };
+              return (
+                <div key={p.id} className="glass-card p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-mono font-medium text-foreground">{p.user_name}</div>
+                    <div className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${statusColor}`}>{p.status}</div>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono">
+                    <span>{p.plan_label} • ${p.amount} USD</span>
+                    <span>{new Date(p.created_at).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}</span>
+                  </div>
+                  {p.ai_notes && <div className="text-[10px] text-muted-foreground/70 font-mono">IA: {p.ai_notes}</div>}
+                  {p.proof_url && (
+                    <a href={p.proof_url} target="_blank" rel="noreferrer" className="block">
+                      <img src={p.proof_url} alt="proof" className="w-full max-h-40 object-contain rounded bg-secondary/30" />
+                    </a>
+                  )}
+                  {p.delivered_key && (
+                    <div className="text-[11px] font-mono bg-emerald-500/10 border border-emerald-500/30 rounded p-2 text-emerald-300 break-all">
+                      Key: {p.delivered_key}
+                    </div>
+                  )}
+                  {p.status === "pending" && (
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <button onClick={approve} className="py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-medium hover:bg-emerald-500/30 active:scale-95 flex items-center justify-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> Aprobar
+                      </button>
+                      <button onClick={reject} className="py-2 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-medium hover:bg-red-500/30 active:scale-95 flex items-center justify-center gap-1">
+                        <X className="w-3.5 h-3.5" /> Rechazar
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

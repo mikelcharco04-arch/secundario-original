@@ -110,6 +110,75 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_requests: {
+        Row: {
+          admin_notes: string | null
+          ai_notes: string | null
+          ai_verdict: string | null
+          amount: number
+          created_at: string
+          currency: string
+          delivered_key: string | null
+          duration: string
+          duration_ms: number
+          id: string
+          key_type: string
+          plan_id: string
+          plan_label: string
+          proof_url: string | null
+          resolved_at: string | null
+          status: string
+          telegram_chat_id: string | null
+          telegram_message_id: number | null
+          updated_at: string
+          user_name: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          ai_notes?: string | null
+          ai_verdict?: string | null
+          amount: number
+          created_at?: string
+          currency?: string
+          delivered_key?: string | null
+          duration: string
+          duration_ms: number
+          id?: string
+          key_type?: string
+          plan_id: string
+          plan_label: string
+          proof_url?: string | null
+          resolved_at?: string | null
+          status?: string
+          telegram_chat_id?: string | null
+          telegram_message_id?: number | null
+          updated_at?: string
+          user_name: string
+        }
+        Update: {
+          admin_notes?: string | null
+          ai_notes?: string | null
+          ai_verdict?: string | null
+          amount?: number
+          created_at?: string
+          currency?: string
+          delivered_key?: string | null
+          duration?: string
+          duration_ms?: number
+          id?: string
+          key_type?: string
+          plan_id?: string
+          plan_label?: string
+          proof_url?: string | null
+          resolved_at?: string | null
+          status?: string
+          telegram_chat_id?: string | null
+          telegram_message_id?: number | null
+          updated_at?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       proxy_keys: {
         Row: {
           activated_at: string | null
