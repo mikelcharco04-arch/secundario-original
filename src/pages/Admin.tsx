@@ -260,6 +260,7 @@ const Admin = () => {
             { id: "generate", label: "Generar", icon: Plus },
             { id: "keys", label: "Keys", icon: KeyRound },
             { id: "users", label: "Usuarios", icon: Users },
+            { id: "payments", label: "Pagos", icon: CreditCard },
             { id: "stats", label: "Monitor", icon: Signal },
           ] as const).map(({ id, label, icon: Icon }) => (
             <button
