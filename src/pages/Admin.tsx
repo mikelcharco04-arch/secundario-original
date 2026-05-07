@@ -9,14 +9,16 @@ import {
   KeyRound, Plus, LogOut, Trash2, Copy, Check,
   Users, Ban, UserX, Clock, Terminal, Shield, Activity,
   Database, Minus, Hash, Zap, Wifi,
-  Server, Globe, Signal, Power, ChevronRight, Lock
+  Server, Globe, Signal, Power, ChevronRight, Lock, CreditCard, X
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Admin = () => {
   const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem("admin_auth") === "true");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"keys" | "users" | "generate" | "stats">("generate");
+  const [activeTab, setActiveTab] = useState<"keys" | "users" | "generate" | "stats" | "payments">("generate");
+  const [payments, setPayments] = useState<any[]>([]);
 
   const [keyType, setKeyType] = useState<"Normal" | "Premium">("Normal");
   const [duration, setDuration] = useState("7 días");
@@ -26,9 +28,14 @@ const Admin = () => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const refreshData = useCallback(async () => {
-    const [k, u] = await Promise.all([getKeys(), getActiveUsers()]);
+    const [k, u, p] = await Promise.all([
+      getKeys(),
+      getActiveUsers(),
+      supabase.from("payment_requests").select("*").order("created_at", { ascending: false }).limit(50),
+    ]);
     setKeys(k);
     setUsers(u);
+    setPayments(p.data || []);
   }, []);
 
   useEffect(() => {
