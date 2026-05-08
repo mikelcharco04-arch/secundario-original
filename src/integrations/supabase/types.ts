@@ -119,8 +119,10 @@ export type Database = {
           created_at: string
           currency: string
           delivered_key: string | null
+          device_fingerprint: string | null
           duration: string
           duration_ms: number
+          email: string | null
           id: string
           key_type: string
           plan_id: string
@@ -141,8 +143,10 @@ export type Database = {
           created_at?: string
           currency?: string
           delivered_key?: string | null
+          device_fingerprint?: string | null
           duration: string
           duration_ms: number
+          email?: string | null
           id?: string
           key_type?: string
           plan_id: string
@@ -163,8 +167,10 @@ export type Database = {
           created_at?: string
           currency?: string
           delivered_key?: string | null
+          device_fingerprint?: string | null
           duration?: string
           duration_ms?: number
+          email?: string | null
           id?: string
           key_type?: string
           plan_id?: string
@@ -183,11 +189,14 @@ export type Database = {
         Row: {
           activated_at: string | null
           created_at: string
+          device_fingerprint: string | null
           duration: string
           duration_ms: number
+          email: string | null
           expires_at: string | null
           id: string
           key: string
+          payment_request_id: string | null
           status: string
           type: string
           used_by: string | null
@@ -195,11 +204,14 @@ export type Database = {
         Insert: {
           activated_at?: string | null
           created_at?: string
+          device_fingerprint?: string | null
           duration: string
           duration_ms?: number
+          email?: string | null
           expires_at?: string | null
           id?: string
           key: string
+          payment_request_id?: string | null
           status?: string
           type: string
           used_by?: string | null
@@ -207,11 +219,14 @@ export type Database = {
         Update: {
           activated_at?: string | null
           created_at?: string
+          device_fingerprint?: string | null
           duration?: string
           duration_ms?: number
+          email?: string | null
           expires_at?: string | null
           id?: string
           key?: string
+          payment_request_id?: string | null
           status?: string
           type?: string
           used_by?: string | null

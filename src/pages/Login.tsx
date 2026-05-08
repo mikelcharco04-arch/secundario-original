@@ -77,7 +77,7 @@ const Login = () => {
             </div>
           </div>
           <div className="flex items-center gap-1.5 mb-1">
-            <h1 className="text-lg font-bold text-foreground tracking-tight">BoykaFFX7 & HFFX4</h1>
+            <h1 className="text-lg font-bold text-foreground tracking-tight">L-GAN & HFFX4</h1>
             <VerifiedBadge />
           </div>
           <p className="text-[10px] text-muted-foreground/70 tracking-widest uppercase">Secure Gateway v2.4</p>

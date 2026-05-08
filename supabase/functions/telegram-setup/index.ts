@@ -6,7 +6,7 @@ Deno.serve(async () => {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       url: "https://wmvyfiizwrrubtjmdznn.supabase.co/functions/v1/telegram-webhook",
-      allowed_updates: ["callback_query"],
+      allowed_updates: ["callback_query", "message"],
     }),
   }).then(r => r.json());
   return new Response(JSON.stringify({ me, set }, null, 2), { headers: { "Content-Type": "application/json" } });
