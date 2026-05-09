@@ -44,6 +44,75 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_action_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          target: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target?: string | null
+        }
+        Relationships: []
+      }
+      banned_payments: {
+        Row: {
+          created_at: string
+          payment_id: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          payment_id: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          payment_id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      blocked_users: {
+        Row: {
+          blocked_by: string | null
+          created_at: string
+          email: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_by?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_by?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       payment_orders: {
         Row: {
           amount: number
@@ -125,9 +194,11 @@ export type Database = {
           email: string | null
           id: string
           key_type: string
+          payment_method: string
           plan_id: string
           plan_label: string
           proof_url: string | null
+          receipt_type: string
           resolved_at: string | null
           status: string
           telegram_chat_id: string | null
@@ -149,9 +220,11 @@ export type Database = {
           email?: string | null
           id?: string
           key_type?: string
+          payment_method?: string
           plan_id: string
           plan_label: string
           proof_url?: string | null
+          receipt_type?: string
           resolved_at?: string | null
           status?: string
           telegram_chat_id?: string | null
@@ -173,9 +246,11 @@ export type Database = {
           email?: string | null
           id?: string
           key_type?: string
+          payment_method?: string
           plan_id?: string
           plan_label?: string
           proof_url?: string | null
+          receipt_type?: string
           resolved_at?: string | null
           status?: string
           telegram_chat_id?: string | null
@@ -230,6 +305,24 @@ export type Database = {
           status?: string
           type?: string
           used_by?: string | null
+        }
+        Relationships: []
+      }
+      telegram_admins: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          telegram_id: number
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          telegram_id: number
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          telegram_id?: number
         }
         Relationships: []
       }
