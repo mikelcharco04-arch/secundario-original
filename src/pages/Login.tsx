@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
-import { Shield, KeyRound, User, Lock, Fingerprint, Wifi } from "lucide-react";
+import { Shield, KeyRound, User, Lock, Fingerprint, Sparkles, MessageCircle } from "lucide-react";
 import { validateKey, activateKey, registerActiveUser } from "@/lib/keys";
 import defaultAvatar from "@/assets/login-avatar.jpeg";
 
