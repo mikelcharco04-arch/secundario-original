@@ -385,6 +385,21 @@ const Pay = () => {
                 <br />Puedes cerrar y volver, no se pierde.
               </p>
               <div className="text-[9px] text-muted-foreground/50 font-mono">ID: {requestId.slice(0, 8)}</div>
+              <div className="pt-2 space-y-2">
+                <button
+                  onClick={() => navigate("/")}
+                  className="w-full bg-foreground text-background font-semibold py-2.5 rounded-lg text-sm hover:opacity-90 active:scale-[0.98] transition-all"
+                >
+                  Ir al login
+                </button>
+                <button
+                  onClick={reset}
+                  className="w-full bg-secondary/60 border border-border/40 text-foreground font-semibold py-2.5 rounded-lg text-sm hover:bg-secondary/80 active:scale-[0.98] transition-all"
+                >
+                  Hacer otro pedido
+                </button>
+                <p className="text-[9px] text-muted-foreground/50">Tu pedido sigue activo aunque salgas.</p>
+              </div>
             </div>
           )}
 
