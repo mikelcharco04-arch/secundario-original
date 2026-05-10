@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
-import { Shield, KeyRound, User, Lock, Fingerprint, Wifi } from "lucide-react";
+import { Shield, KeyRound, User, Lock, Fingerprint, Sparkles, MessageCircle } from "lucide-react";
 import { validateKey, activateKey, registerActiveUser } from "@/lib/keys";
-import defaultAvatar from "@/assets/default-avatar.gif";
+import defaultAvatar from "@/assets/login-avatar.jpeg";
 
 const Login = () => {
   const [name, setName] = useState("");
@@ -69,11 +69,13 @@ const Login = () => {
         {/* Avatar + Title */}
         <div className="flex flex-col items-center mb-6">
           <div className="relative mb-3">
-            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-[0_0_40px_rgba(255,255,255,0.06)]">
-              <img src={defaultAvatar} alt="Profile" className="w-full h-full object-cover scale-110" />
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-background flex items-center justify-center">
-              <Wifi className="w-3.5 h-3.5 text-background" />
+            {/* Anillo gradiente estilo TikTok story */}
+            <div className="p-[3px] rounded-full bg-gradient-to-tr from-sky-400 via-blue-500 to-cyan-300 shadow-[0_0_30px_rgba(56,189,248,0.45)]">
+              <div className="p-[2px] rounded-full bg-background">
+                <div className="w-24 h-24 rounded-full overflow-hidden">
+                  <img src={defaultAvatar} alt="Profile" className="w-full h-full object-cover" />
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-1.5 mb-1">
@@ -157,11 +159,26 @@ const Login = () => {
             <button
               type="button"
               onClick={() => navigate("/pay")}
-              className="w-full bg-card/60 backdrop-blur-xl text-foreground font-semibold py-2.5 rounded-lg text-sm border border-border/40 hover:bg-card/80 active:scale-[0.98] transition-all flex items-center justify-center"
-              style={{ boxShadow: "0 0 20px rgba(255,255,255,0.04), inset 0 0 20px rgba(255,255,255,0.02)" }}
+              className="relative w-full overflow-hidden rounded-lg py-3 text-sm font-bold text-white active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
+              style={{
+                background: "linear-gradient(135deg, hsl(199 89% 48%), hsl(217 91% 60%), hsl(190 95% 50%))",
+                boxShadow: "0 8px 24px -4px hsl(199 89% 48% / 0.55), 0 0 0 1px hsl(199 89% 70% / 0.35) inset",
+              }}
             >
-              Comprar Key
+              <Sparkles className="w-4 h-4" />
+              <span className="tracking-wide">COMPRAR KEY</span>
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
             </button>
+
+            <a
+              href="https://whatsapp.com/channel/0029VbC678PIyPtc7iERCH2R"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 active:scale-[0.98] transition-all"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              Canal Oficial · WhatsApp
+            </a>
           </form>
         </div>
 
