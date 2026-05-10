@@ -159,11 +159,26 @@ const Login = () => {
             <button
               type="button"
               onClick={() => navigate("/pay")}
-              className="w-full bg-card/60 backdrop-blur-xl text-foreground font-semibold py-2.5 rounded-lg text-sm border border-border/40 hover:bg-card/80 active:scale-[0.98] transition-all flex items-center justify-center"
-              style={{ boxShadow: "0 0 20px rgba(255,255,255,0.04), inset 0 0 20px rgba(255,255,255,0.02)" }}
+              className="relative w-full overflow-hidden rounded-lg py-3 text-sm font-bold text-white active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
+              style={{
+                background: "linear-gradient(135deg, hsl(199 89% 48%), hsl(217 91% 60%), hsl(190 95% 50%))",
+                boxShadow: "0 8px 24px -4px hsl(199 89% 48% / 0.55), 0 0 0 1px hsl(199 89% 70% / 0.35) inset",
+              }}
             >
-              Comprar Key
+              <Sparkles className="w-4 h-4" />
+              <span className="tracking-wide">COMPRAR KEY</span>
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
             </button>
+
+            <a
+              href="https://whatsapp.com/channel/0029VbC678PIyPtc7iERCH2R"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 active:scale-[0.98] transition-all"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              Canal Oficial · WhatsApp
+            </a>
           </form>
         </div>
 
