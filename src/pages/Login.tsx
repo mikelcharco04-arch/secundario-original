@@ -69,11 +69,13 @@ const Login = () => {
         {/* Avatar + Title */}
         <div className="flex flex-col items-center mb-6">
           <div className="relative mb-3">
-            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-[0_0_40px_rgba(255,255,255,0.06)]">
-              <img src={defaultAvatar} alt="Profile" className="w-full h-full object-cover scale-110" />
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-background flex items-center justify-center">
-              <Wifi className="w-3.5 h-3.5 text-background" />
+            {/* Anillo gradiente estilo TikTok story */}
+            <div className="p-[3px] rounded-full bg-gradient-to-tr from-sky-400 via-blue-500 to-cyan-300 shadow-[0_0_30px_rgba(56,189,248,0.45)]">
+              <div className="p-[2px] rounded-full bg-background">
+                <div className="w-24 h-24 rounded-full overflow-hidden">
+                  <img src={defaultAvatar} alt="Profile" className="w-full h-full object-cover" />
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-1.5 mb-1">
