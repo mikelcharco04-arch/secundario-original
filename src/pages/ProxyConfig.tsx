@@ -81,18 +81,21 @@ const SecurityToggles = () => {
   return (
     <div className="space-y-2">
       {SECURITY_ITEMS.map((label) => (
-         <div key={label} className={`flex items-center justify-between rounded-lg px-3 py-2.5 border ${states[label] ? "bg-primary/5 border-primary/30" : "bg-secondary/20 border-border/30"}`} style={{ transition: "background 0.15s ease, border-color 0.15s ease" }}>
-           <span className={`text-[10px] font-medium ${states[label] ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 0.15s ease" }}>{label}</span>
+         <div key={label} className={`flex items-center justify-between rounded-2xl px-3.5 py-3 border backdrop-blur-md ${states[label] ? "bg-primary/10 border-primary/25" : "bg-secondary/20 border-border/25"}`} style={{ transition: "background 260ms cubic-bezier(0.32, 0.72, 0, 1), border-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
+           <span className={`text-[11px] font-medium ${states[label] ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>{label}</span>
            <button
              onClick={() => toggle(label)}
-             className={`relative w-10 h-6 rounded-full flex-shrink-0 ${states[label] ? "bg-primary" : "bg-secondary border border-border/40"}`}
-             style={{ transition: "background 0.15s ease" }}
+             role="switch"
+             aria-checked={states[label]}
+             className={`relative w-[46px] h-[27px] rounded-full flex-shrink-0 ${states[label] ? "bg-emerald-500" : "bg-secondary border border-border/40"}`}
+             style={{ transition: "background-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
            >
              <span
-               className={`absolute top-[3px] left-[3px] w-[18px] h-[18px] rounded-full shadow-sm ${states[label] ? "bg-primary-foreground" : "bg-muted-foreground/50"}`}
+               className="absolute top-[2px] left-[2px] w-[23px] h-[23px] rounded-full bg-white"
                style={{
-                 transform: states[label] ? "translateX(16px)" : "translateX(0)",
-                 transition: "transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease",
+                 transform: states[label] ? "translateX(19px)" : "translateX(0)",
+                 transition: "transform 260ms cubic-bezier(0.32, 0.72, 0, 1)",
+                 boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
                  willChange: "transform",
                }}
              />
