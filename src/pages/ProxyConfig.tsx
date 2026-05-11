@@ -645,20 +645,20 @@ const ProxyConfig = () => {
       </div>
 
       {settingsSection === null ? (
-        <div className="space-y-2 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
-          {settingsSections.map(({ id, icon: Icon, title }) => (
+        <div className="rounded-2xl bg-card/70 border border-border/40 backdrop-blur-xl overflow-hidden animate-fade-in-up shadow-xl" style={{ animationDelay: "0.05s" }}>
+          {settingsSections.map(({ id, icon: Icon, title }, idx) => (
             <button
               key={id}
               onClick={() => setSettingsSection(id)}
-              className="w-full glass-card p-3.5 flex items-center justify-between hover:bg-card/90 active:scale-[0.98] transition-all"
+              className={`w-full px-4 py-3.5 flex items-center justify-between active:bg-secondary/40 transition-colors ${idx !== settingsSections.length - 1 ? "border-b border-border/30" : ""}`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-secondary/50 border border-border/30 flex items-center justify-center">
-                  <Icon className="w-4 h-4 text-muted-foreground" />
+                <div className="w-8 h-8 rounded-xl bg-secondary/60 border border-border/30 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-foreground/80" />
                 </div>
                 <span className="text-sm text-foreground font-medium">{title}</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground/70" />
             </button>
           ))}
         </div>
@@ -671,7 +671,7 @@ const ProxyConfig = () => {
             <ChevronRight className="w-3 h-3 rotate-180" />
             Volver
           </button>
-          <div className="glass-card p-4">
+          <div className="rounded-2xl bg-card/70 border border-border/40 backdrop-blur-xl p-4 shadow-xl">
             <h2 className="text-sm font-semibold text-foreground mb-4">
               {settingsSections.find(s => s.id === settingsSection)?.title}
             </h2>
