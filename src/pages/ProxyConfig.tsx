@@ -558,69 +558,26 @@ const ProxyConfig = () => {
 
   const settingsSections = [
     {
-      id: "profile",
-      icon: UserCircle,
-      title: "Perfil",
-      content: (
-        <div className="space-y-3">
-          <div className="flex justify-center">
-            <img src={defaultAvatar} alt="Avatar" className="w-20 h-20 rounded-full border-2 border-border object-cover" />
-          </div>
-          {[
-            { label: "Nombre", value: session.name },
-            { label: "Key activa", value: session.key },
-            { label: "Tipo", value: session.type },
-            { label: "Duración", value: session.duration },
-            { label: "Tiempo restante", value: session.expiresAt ? (timeLeft || "Calculando...") : "Ilimitado" },
-          ].map(({ label, value }) => (
-            <div key={label} className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">{label}</p>
-              <p className="text-sm text-foreground font-medium">{value}</p>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: "proxy-config",
-      icon: Settings,
-      title: "Configuración del Proxy",
-      content: (
-        <div className="space-y-3">
-          {[
-            { label: "Protocolo", value: "HTTP / HTTPS / SOCKS5" },
-            { label: "Cifrado", value: "AES-256-GCM" },
-            { label: "DNS primario", value: "1.1.1.1 (Cloudflare)" },
-            { label: "DNS secundario", value: "8.8.8.8 (Google)" },
-            { label: "Modo de túnel", value: "Split Tunneling" },
-            { label: "Compresión", value: "Brotli" },
-            { label: "Keep-Alive", value: "60s" },
-            { label: "Reintentos", value: "3" },
-            { label: "Timeout", value: "30s" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-medium">{value}</span>
-            </div>
-          ))}
-        </div>
-      ),
+      id: "security-integrations",
+      icon: ShieldCheck,
+      title: "Datos de seguridad",
+      content: <SecurityToggles />,
     },
     {
       id: "terms",
       icon: FileText,
-      title: "Términos y Condiciones",
+      title: "Políticas",
       content: (
         <div className="space-y-3">
           {[
-            { t: "1. Uso Aceptable", p: "El servicio está destinado para uso personal y legítimo. Queda prohibido cualquier uso ilegal." },
-            { t: "2. Keys", p: "Las keys son personales e intransferibles. Compartirlas resulta en suspensión inmediata." },
-            { t: "3. Disponibilidad", p: "Servicio proporcionado 'tal cual'. No garantizamos 100% de disponibilidad." },
-            { t: "4. Privacidad", p: "No almacenamos registros de navegación. Solo datos de sesión para gestionar acceso." },
+            { t: "1. Uso Aceptable", p: "El servicio está destinado para uso personal y legítimo. Queda prohibido cualquier uso ilegal o que infrinja términos de terceros." },
+            { t: "2. Keys", p: "Las keys son personales e intransferibles. Compartirlas resulta en suspensión inmediata sin reembolso." },
+            { t: "3. Disponibilidad", p: "Servicio proporcionado 'tal cual'. No garantizamos 100% de disponibilidad ni resultados específicos." },
+            { t: "4. Privacidad", p: "No almacenamos registros de navegación. Solo datos mínimos de sesión para gestionar el acceso." },
           ].map(({ t, p }) => (
-            <div key={t} className="bg-secondary/20 rounded-lg p-3 border border-border/30">
+            <div key={t} className="bg-secondary/20 rounded-2xl p-3.5 border border-border/25 backdrop-blur-md">
               <h3 className="text-xs font-semibold text-foreground mb-1">{t}</h3>
-              <p className="text-[10px] text-muted-foreground leading-relaxed">{p}</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{p}</p>
             </div>
           ))}
         </div>
@@ -629,168 +586,54 @@ const ProxyConfig = () => {
     {
       id: "developer",
       icon: Code,
-      title: "Desarrollador",
+      title: "Creador",
       content: (
         <div className="space-y-3">
           <div className="flex flex-col items-center text-center py-3">
-            <div className="w-16 h-16 rounded-full bg-secondary/50 border-2 border-border/50 flex items-center justify-center mb-2">
-              <Code className="w-7 h-7 text-foreground" />
+            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-border/50 mb-3">
+              <img src={defaultAvatar} alt="Creador" className="w-full h-full object-cover" />
             </div>
             <div className="flex items-center gap-1.5">
-              <h3 className="text-sm font-semibold text-foreground">Modifaxff Oficial</h3>
+              <h3 className="text-base font-semibold text-foreground">Modifaxff Oficial</h3>
               <VerifiedBadge className="w-4 h-4" />
             </div>
-            <p className="text-[10px] text-muted-foreground mt-0.5">Desarrollador y Creador</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Desarrollador y Creador</p>
           </div>
-          {[
-            { label: "Plataforma", value: "Conexión Proxy v2.4" },
-            { label: "Stack", value: "React + TypeScript" },
-            { label: "Cifrado", value: "AES-256-GCM" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-medium">{value}</span>
-            </div>
-          ))}
+          <a
+            href="https://whatsapp.com/channel/0029VbC678PIyPtc7iERCH2R"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block bg-emerald-500/10 border border-emerald-500/25 rounded-2xl px-4 py-3 text-center backdrop-blur-md active:scale-[0.98] transition-transform"
+          >
+            <p className="text-[10px] text-muted-foreground/80 uppercase tracking-wider mb-0.5">Canal Oficial</p>
+            <p className="text-xs text-emerald-300 font-medium">WhatsApp · Modifaxff</p>
+          </a>
         </div>
       ),
     },
     {
-      id: "advanced",
+      id: "how-modules-work",
       icon: Cpu,
-      title: "Configuración Avanzada",
+      title: "Cómo funcionan los módulos",
       content: (
         <div className="space-y-3">
           {[
-            { label: "TCP Fast Open", value: "Habilitado" },
-            { label: "BBR Congestion", value: "Habilitado" },
-            { label: "IPv6 Dual Stack", value: "Desactivado" },
-            { label: "Socket Buffer", value: "256KB / 512KB" },
-            { label: "Nagle Algorithm", value: "Off (Low Latency)" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-medium font-mono">{value}</span>
+            { t: "Combat Modules", p: "Optimizan apuntado, retroceso y movimiento. Activa solo los que necesites para mejorar precisión y respuesta en partida." },
+            { t: "Field of View", p: "El overlay de FOV te ayuda a calibrar tu zona central de visión. Ajusta el tamaño con el deslizador para que se sienta natural." },
+            { t: "Performance Tuning", p: "Controla suavidad de apuntado, ritmo de disparo y sensibilidad. Valores bajos = más estables, valores altos = más reactivos." },
+            { t: "Memory & Protection", p: "Memory Patcher y Anti-Ban Shield protegen la sesión y evitan detecciones durante el uso." },
+            { t: "Stealth & Evasion", p: "Root Cloak, Packet Spoofer y Process Hider ocultan trazas del sistema para mantener la conexión limpia." },
+            { t: "Injection Engine", p: "DEX Injector, SSL Bypass y HWID Spoofer permiten cargar parches y evitar bloqueos por dispositivo." },
+            { t: "Runtime Tuning", p: "Ajusta memoria, prioridad de hilos y delay de inyección. Valores moderados ofrecen el mejor balance." },
+            { t: "Recomendación", p: "Activa los módulos uno a uno y prueba en partida. No es necesario activar todo al mismo tiempo." },
+          ].map(({ t, p }) => (
+            <div key={t} className="bg-secondary/20 rounded-2xl p-3.5 border border-border/25 backdrop-blur-md">
+              <h3 className="text-xs font-semibold text-foreground mb-1">{t}</h3>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{p}</p>
             </div>
           ))}
         </div>
       ),
-    },
-    {
-      id: "logs",
-      icon: FileText,
-      title: "Registro de Actividad",
-      content: (
-        <div className="bg-secondary/20 rounded-lg p-3 border border-border/30 font-mono text-[9px] space-y-1.5 max-h-60 overflow-y-auto">
-          <p><span className="text-emerald-400">[{new Date().toLocaleTimeString()}]</span> <span className="text-foreground/60">Sesión iniciada — {session.name}</span></p>
-          <p><span className="text-emerald-400">[{new Date(Date.now() - 120000).toLocaleTimeString()}]</span> <span className="text-foreground/60">TLS handshake OK</span></p>
-          <p><span className="text-blue-400">[{new Date(Date.now() - 300000).toLocaleTimeString()}]</span> <span className="text-foreground/60">DNS → 1.1.1.1 (3ms)</span></p>
-          <p><span className="text-amber-400">[{new Date(Date.now() - 900000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Auto-reconnect</span></p>
-        </div>
-      ),
-    },
-    {
-      id: "network-diag",
-      icon: Wifi,
-      title: "Diagnóstico de Red",
-      content: (
-        <div className="space-y-3">
-          {[
-            { test: "Ping proxy", result: "8ms", ok: true },
-            { test: "DNS resolution", result: "3ms", ok: true },
-            { test: "TLS cert", result: "Valid", ok: true },
-            { test: "Port 443", result: "Open", ok: true },
-            { test: "Port 8080", result: "Open", ok: true },
-            { test: "IPv6", result: "N/A", ok: false },
-          ].map(({ test, result, ok }) => (
-            <div key={test} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{test}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-foreground font-mono">{result}</span>
-                <div className={`w-2 h-2 rounded-full ${ok ? "bg-emerald-500" : "bg-amber-500"}`} />
-              </div>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: "speed-integrations",
-      icon: Rocket,
-      title: "Integraciones de Rapidez",
-      content: (
-        <div className="space-y-2">
-          {[
-            { label: "TCP Fast Relay", value: "Activo" },
-            { label: "UDP Accelerator", value: "v2.1" },
-            { label: "Packet Burst Mode", value: "Enabled" },
-            { label: "Zero-Copy Socket", value: "Activo" },
-            { label: "HTTP/3 QUIC", value: "Activo" },
-            { label: "Connection Pooling", value: "128 conn" },
-            { label: "Pre-fetch DNS", value: "Enabled" },
-            { label: "Edge CDN Routing", value: "Auto" },
-            { label: "Multi-Path TCP", value: "v0.95" },
-            { label: "Kernel Bypass NIC", value: "DPDK" },
-            { label: "Async I/O Engine", value: "io_uring" },
-            { label: "TLS Session Resume", value: "Activo" },
-            { label: "Nano-Latency Mode", value: "< 1ms" },
-            { label: "Turbo Handshake", value: "0-RTT" },
-            { label: "Smart Route Select", value: "AI" },
-            { label: "Memory-Mapped I/O", value: "Enabled" },
-            { label: "Parallel Streams", value: "x16" },
-            { label: "GRO/GSO Offload", value: "Activo" },
-            { label: "Priority Queue", value: "Real-time" },
-            { label: "Hot-Path Optimizer", value: "JIT" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-mono font-medium">{value}</span>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: "fluidity-integrations",
-      icon: Sparkles,
-      title: "Fluidez y Animaciones",
-      content: (
-        <div className="space-y-2">
-          {[
-            { label: "Frame Interpolation", value: "120fps" },
-            { label: "GPU Render Pipeline", value: "Vulkan" },
-            { label: "V-Sync Override", value: "Activo" },
-            { label: "Motion Blur Filter", value: "Off" },
-            { label: "Triple Buffering", value: "Enabled" },
-            { label: "Shader Pre-Compile", value: "Activo" },
-            { label: "LOD Bias Override", value: "-1.5" },
-            { label: "Texture Streaming", value: "Async" },
-            { label: "Draw Call Batcher", value: "v3.0" },
-            { label: "Occlusion Culling", value: "GPU" },
-            { label: "Frame Pacing", value: "Adaptive" },
-            { label: "Render Thread Priority", value: "High" },
-            { label: "Anti-Stutter Engine", value: "Activo" },
-            { label: "VRAM Auto-Manage", value: "Smart" },
-            { label: "Tessellation Control", value: "Dynamic" },
-            { label: "Anisotropic Override", value: "x16" },
-            { label: "Post-FX Pipeline", value: "Optimized" },
-            { label: "Compute Dispatch", value: "Async" },
-            { label: "Jitter Compensation", value: "< 0.5ms" },
-            { label: "Adaptive Resolution", value: "Activo" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-mono font-medium">{value}</span>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: "security-integrations",
-      icon: ShieldCheck,
-      title: "Seguridad Avanzada",
-      content: <SecurityToggles />,
     },
   ];
 
