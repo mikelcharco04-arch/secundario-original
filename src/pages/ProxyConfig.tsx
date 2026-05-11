@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
@@ -81,18 +81,21 @@ const SecurityToggles = () => {
   return (
     <div className="space-y-2">
       {SECURITY_ITEMS.map((label) => (
-         <div key={label} className={`flex items-center justify-between rounded-lg px-3 py-2.5 border ${states[label] ? "bg-primary/5 border-primary/30" : "bg-secondary/20 border-border/30"}`} style={{ transition: "background 0.15s ease, border-color 0.15s ease" }}>
-           <span className={`text-[10px] font-medium ${states[label] ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 0.15s ease" }}>{label}</span>
+         <div key={label} className={`flex items-center justify-between rounded-2xl px-3.5 py-3 border backdrop-blur-md ${states[label] ? "bg-primary/10 border-primary/25" : "bg-secondary/20 border-border/25"}`} style={{ transition: "background 260ms cubic-bezier(0.32, 0.72, 0, 1), border-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
+           <span className={`text-[11px] font-medium ${states[label] ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>{label}</span>
            <button
              onClick={() => toggle(label)}
-             className={`relative w-10 h-6 rounded-full flex-shrink-0 ${states[label] ? "bg-primary" : "bg-secondary border border-border/40"}`}
-             style={{ transition: "background 0.15s ease" }}
+             role="switch"
+             aria-checked={states[label]}
+             className={`relative w-[46px] h-[27px] rounded-full flex-shrink-0 ${states[label] ? "bg-emerald-500" : "bg-secondary border border-border/40"}`}
+             style={{ transition: "background-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
            >
              <span
-               className={`absolute top-[3px] left-[3px] w-[18px] h-[18px] rounded-full shadow-sm ${states[label] ? "bg-primary-foreground" : "bg-muted-foreground/50"}`}
+               className="absolute top-[2px] left-[2px] w-[23px] h-[23px] rounded-full bg-white"
                style={{
-                 transform: states[label] ? "translateX(16px)" : "translateX(0)",
-                 transition: "transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease",
+                 transform: states[label] ? "translateX(19px)" : "translateX(0)",
+                 transition: "transform 260ms cubic-bezier(0.32, 0.72, 0, 1)",
+                 boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
                  willChange: "transform",
                }}
              />
@@ -240,34 +243,35 @@ const ProxyConfig = () => {
 
   if (!session) return null;
 
-  // Animated Toggle component
+  // Animated Toggle — iOS-style smooth spring
   const AnimatedToggle = ({ label, icon, value, onChange }: { label: string; icon: React.ReactNode; value: boolean; onChange: (v: boolean) => void }) => (
     <div
-      className={`flex items-center justify-between rounded-xl px-4 py-3.5 border ${
-        value ? "bg-primary/5 border-primary/30" : "bg-secondary/30 border-border/20"
+      className={`flex items-center justify-between rounded-2xl px-4 py-3.5 border backdrop-blur-md ${
+        value ? "bg-primary/10 border-primary/30" : "bg-secondary/30 border-border/20"
       }`}
-      style={{ transition: "background 0.15s ease, border-color 0.15s ease" }}
+      style={{ transition: "background 260ms cubic-bezier(0.32, 0.72, 0, 1), border-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
     >
       <div className="flex items-center gap-3">
-        <div className={`p-1.5 rounded-lg ${value ? "bg-primary/10 text-primary" : "bg-secondary/50 text-muted-foreground"}`} style={{ transition: "all 0.15s ease" }}>
+        <div className={`p-1.5 rounded-xl ${value ? "bg-primary/15 text-primary" : "bg-secondary/50 text-muted-foreground"}`} style={{ transition: "all 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
           {icon}
         </div>
-        <span className={`text-sm font-medium ${value ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 0.15s ease" }}>{label}</span>
+        <span className={`text-sm font-medium ${value ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>{label}</span>
       </div>
       <button
         onClick={() => onChange(!value)}
-        className={`relative w-12 h-7 rounded-full flex-shrink-0 ${
-          value ? "bg-primary" : "bg-secondary border border-border/40"
+        role="switch"
+        aria-checked={value}
+        className={`relative w-[52px] h-[31px] rounded-full flex-shrink-0 ${
+          value ? "bg-emerald-500" : "bg-secondary border border-border/40"
         }`}
-        style={{ transition: "background 0.15s ease, border-color 0.15s ease" }}
+        style={{ transition: "background-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
       >
         <span
-          className={`absolute top-[3px] left-[3px] w-[22px] h-[22px] rounded-full shadow-sm ${
-            value ? "bg-primary-foreground" : "bg-muted-foreground/60"
-          }`}
+          className="absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white"
           style={{
-            transform: value ? "translateX(20px)" : "translateX(0)",
-            transition: "transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease",
+            transform: value ? "translateX(21px)" : "translateX(0)",
+            transition: "transform 260ms cubic-bezier(0.32, 0.72, 0, 1)",
+            boxShadow: "0 3px 8px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.2)",
             willChange: "transform",
           }}
         />
@@ -275,25 +279,42 @@ const ProxyConfig = () => {
     </div>
   );
 
-  // FOV Slider — fluido sin lag (onInput + sin transitions de fondo)
+  // FOV Slider — ULTRA fluido: uncontrolled + ref + CSS var, sin re-render durante arrastre
   const FovSlider = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
-    const pct = ((value - 40) / 260) * 100;
+    const inputRef = useRef<HTMLInputElement>(null);
+    const trackRef = useRef<HTMLDivElement>(null);
+    const labelRef = useRef<HTMLSpanElement>(null);
+    const rafRef = useRef<number | null>(null);
+
+    const apply = (v: number) => {
+      const pct = ((v - 40) / 260) * 100;
+      if (trackRef.current) trackRef.current.style.setProperty("--fill", `${pct}%`);
+      if (labelRef.current) labelRef.current.textContent = `${v}px`;
+    };
+
     return (
-      <div className="rounded-xl px-4 py-3 bg-secondary/20 border border-border/20">
+      <div ref={trackRef} className="rounded-2xl px-4 py-3 bg-secondary/20 border border-border/20 backdrop-blur-md" style={{ ["--fill" as any]: `${((value - 40) / 260) * 100}%` }}>
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs text-muted-foreground font-medium">Tamaño de FOV</span>
-          <span className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}px</span>
+          <span ref={labelRef} className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}px</span>
         </div>
         <input
+          ref={inputRef}
           type="range"
           min={40}
           max={300}
-          value={value}
-          onInput={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          defaultValue={value}
+          onInput={(e) => {
+            const v = Number((e.target as HTMLInputElement).value);
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = requestAnimationFrame(() => apply(v));
+          }}
+          onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          onTouchEnd={(e) => onChange(Number((e.target as HTMLInputElement).value))}
           onChange={(e) => onChange(Number(e.target.value))}
           className="w-full h-1.5 rounded-full appearance-none cursor-pointer slider-fluid"
           style={{
-            background: `linear-gradient(to right, hsl(var(--primary)) ${pct}%, hsl(var(--secondary)) ${pct}%)`,
+            background: "linear-gradient(to right, hsl(var(--primary)) var(--fill), hsl(var(--secondary)) var(--fill))",
             touchAction: "none",
           }}
         />
@@ -301,25 +322,40 @@ const ProxyConfig = () => {
     );
   };
 
-  // Performance Slider — fluido (onInput, sin animaciones de transición)
-  const PerfSlider = ({ label, icon, value, onChange, unit = "%" }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; unit?: string }) => (
-    <div className="rounded-xl px-4 py-3 bg-secondary/20 border border-border/20">
-      <div className="flex items-center justify-between mb-2.5">
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground">{icon}</span>
-          <span className="text-xs text-muted-foreground font-medium">{label}</span>
+  // Performance Slider — ultra fluido (uncontrolled + rAF + CSS var)
+  const PerfSlider = ({ label, icon, value, onChange, unit = "%" }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; unit?: string }) => {
+    const wrapRef = useRef<HTMLDivElement>(null);
+    const labelRef = useRef<HTMLSpanElement>(null);
+    const rafRef = useRef<number | null>(null);
+    const apply = (v: number) => {
+      if (wrapRef.current) wrapRef.current.style.setProperty("--fill", `${v}%`);
+      if (labelRef.current) labelRef.current.textContent = `${v}${unit}`;
+    };
+    return (
+      <div ref={wrapRef} className="rounded-2xl px-4 py-3 bg-secondary/20 border border-border/20 backdrop-blur-md" style={{ ["--fill" as any]: `${value}%` }}>
+        <div className="flex items-center justify-between mb-2.5">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">{icon}</span>
+            <span className="text-xs text-muted-foreground font-medium">{label}</span>
+          </div>
+          <span ref={labelRef} className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}{unit}</span>
         </div>
-        <span className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}{unit}</span>
+        <input
+          type="range" min={0} max={100} defaultValue={value}
+          onInput={(e) => {
+            const v = Number((e.target as HTMLInputElement).value);
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = requestAnimationFrame(() => apply(v));
+          }}
+          onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          onTouchEnd={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="w-full h-1.5 rounded-full appearance-none cursor-pointer slider-fluid"
+          style={{ background: "linear-gradient(to right, hsl(var(--primary)) var(--fill), hsl(var(--secondary)) var(--fill))", touchAction: "none" }}
+        />
       </div>
-      <input
-        type="range" min={0} max={100} value={value}
-        onInput={(e) => onChange(Number((e.target as HTMLInputElement).value))}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-1.5 rounded-full appearance-none cursor-pointer slider-fluid"
-        style={{ background: `linear-gradient(to right, hsl(var(--primary)) ${value}%, hsl(var(--secondary)) ${value}%)`, touchAction: "none" }}
-      />
-    </div>
-  );
+    );
+  };
 
   const renderHome = () => (
     <div className="space-y-4">
@@ -522,69 +558,26 @@ const ProxyConfig = () => {
 
   const settingsSections = [
     {
-      id: "profile",
-      icon: UserCircle,
-      title: "Perfil",
-      content: (
-        <div className="space-y-3">
-          <div className="flex justify-center">
-            <img src={defaultAvatar} alt="Avatar" className="w-20 h-20 rounded-full border-2 border-border object-cover" />
-          </div>
-          {[
-            { label: "Nombre", value: session.name },
-            { label: "Key activa", value: session.key },
-            { label: "Tipo", value: session.type },
-            { label: "Duración", value: session.duration },
-            { label: "Tiempo restante", value: session.expiresAt ? (timeLeft || "Calculando...") : "Ilimitado" },
-          ].map(({ label, value }) => (
-            <div key={label} className="bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <p className="text-[9px] text-muted-foreground/70 uppercase tracking-wider mb-0.5">{label}</p>
-              <p className="text-sm text-foreground font-medium">{value}</p>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: "proxy-config",
-      icon: Settings,
-      title: "Configuración del Proxy",
-      content: (
-        <div className="space-y-3">
-          {[
-            { label: "Protocolo", value: "HTTP / HTTPS / SOCKS5" },
-            { label: "Cifrado", value: "AES-256-GCM" },
-            { label: "DNS primario", value: "1.1.1.1 (Cloudflare)" },
-            { label: "DNS secundario", value: "8.8.8.8 (Google)" },
-            { label: "Modo de túnel", value: "Split Tunneling" },
-            { label: "Compresión", value: "Brotli" },
-            { label: "Keep-Alive", value: "60s" },
-            { label: "Reintentos", value: "3" },
-            { label: "Timeout", value: "30s" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-medium">{value}</span>
-            </div>
-          ))}
-        </div>
-      ),
+      id: "security-integrations",
+      icon: ShieldCheck,
+      title: "Datos de seguridad",
+      content: <SecurityToggles />,
     },
     {
       id: "terms",
       icon: FileText,
-      title: "Términos y Condiciones",
+      title: "Políticas",
       content: (
         <div className="space-y-3">
           {[
-            { t: "1. Uso Aceptable", p: "El servicio está destinado para uso personal y legítimo. Queda prohibido cualquier uso ilegal." },
-            { t: "2. Keys", p: "Las keys son personales e intransferibles. Compartirlas resulta en suspensión inmediata." },
-            { t: "3. Disponibilidad", p: "Servicio proporcionado 'tal cual'. No garantizamos 100% de disponibilidad." },
-            { t: "4. Privacidad", p: "No almacenamos registros de navegación. Solo datos de sesión para gestionar acceso." },
+            { t: "1. Uso Aceptable", p: "El servicio está destinado para uso personal y legítimo. Queda prohibido cualquier uso ilegal o que infrinja términos de terceros." },
+            { t: "2. Keys", p: "Las keys son personales e intransferibles. Compartirlas resulta en suspensión inmediata sin reembolso." },
+            { t: "3. Disponibilidad", p: "Servicio proporcionado 'tal cual'. No garantizamos 100% de disponibilidad ni resultados específicos." },
+            { t: "4. Privacidad", p: "No almacenamos registros de navegación. Solo datos mínimos de sesión para gestionar el acceso." },
           ].map(({ t, p }) => (
-            <div key={t} className="bg-secondary/20 rounded-lg p-3 border border-border/30">
+            <div key={t} className="bg-secondary/20 rounded-2xl p-3.5 border border-border/25 backdrop-blur-md">
               <h3 className="text-xs font-semibold text-foreground mb-1">{t}</h3>
-              <p className="text-[10px] text-muted-foreground leading-relaxed">{p}</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{p}</p>
             </div>
           ))}
         </div>
@@ -593,168 +586,54 @@ const ProxyConfig = () => {
     {
       id: "developer",
       icon: Code,
-      title: "Desarrollador",
+      title: "Creador",
       content: (
         <div className="space-y-3">
           <div className="flex flex-col items-center text-center py-3">
-            <div className="w-16 h-16 rounded-full bg-secondary/50 border-2 border-border/50 flex items-center justify-center mb-2">
-              <Code className="w-7 h-7 text-foreground" />
+            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-border/50 mb-3">
+              <img src={defaultAvatar} alt="Creador" className="w-full h-full object-cover" />
             </div>
             <div className="flex items-center gap-1.5">
-              <h3 className="text-sm font-semibold text-foreground">Modifaxff Oficial</h3>
+              <h3 className="text-base font-semibold text-foreground">Modifaxff Oficial</h3>
               <VerifiedBadge className="w-4 h-4" />
             </div>
-            <p className="text-[10px] text-muted-foreground mt-0.5">Desarrollador y Creador</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Desarrollador y Creador</p>
           </div>
-          {[
-            { label: "Plataforma", value: "Conexión Proxy v2.4" },
-            { label: "Stack", value: "React + TypeScript" },
-            { label: "Cifrado", value: "AES-256-GCM" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-medium">{value}</span>
-            </div>
-          ))}
+          <a
+            href="https://whatsapp.com/channel/0029VbC678PIyPtc7iERCH2R"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block bg-emerald-500/10 border border-emerald-500/25 rounded-2xl px-4 py-3 text-center backdrop-blur-md active:scale-[0.98] transition-transform"
+          >
+            <p className="text-[10px] text-muted-foreground/80 uppercase tracking-wider mb-0.5">Canal Oficial</p>
+            <p className="text-xs text-emerald-300 font-medium">WhatsApp · Modifaxff</p>
+          </a>
         </div>
       ),
     },
     {
-      id: "advanced",
+      id: "how-modules-work",
       icon: Cpu,
-      title: "Configuración Avanzada",
+      title: "Cómo funcionan los módulos",
       content: (
         <div className="space-y-3">
           {[
-            { label: "TCP Fast Open", value: "Habilitado" },
-            { label: "BBR Congestion", value: "Habilitado" },
-            { label: "IPv6 Dual Stack", value: "Desactivado" },
-            { label: "Socket Buffer", value: "256KB / 512KB" },
-            { label: "Nagle Algorithm", value: "Off (Low Latency)" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-medium font-mono">{value}</span>
+            { t: "Combat Modules", p: "Optimizan apuntado, retroceso y movimiento. Activa solo los que necesites para mejorar precisión y respuesta en partida." },
+            { t: "Field of View", p: "El overlay de FOV te ayuda a calibrar tu zona central de visión. Ajusta el tamaño con el deslizador para que se sienta natural." },
+            { t: "Performance Tuning", p: "Controla suavidad de apuntado, ritmo de disparo y sensibilidad. Valores bajos = más estables, valores altos = más reactivos." },
+            { t: "Memory & Protection", p: "Memory Patcher y Anti-Ban Shield protegen la sesión y evitan detecciones durante el uso." },
+            { t: "Stealth & Evasion", p: "Root Cloak, Packet Spoofer y Process Hider ocultan trazas del sistema para mantener la conexión limpia." },
+            { t: "Injection Engine", p: "DEX Injector, SSL Bypass y HWID Spoofer permiten cargar parches y evitar bloqueos por dispositivo." },
+            { t: "Runtime Tuning", p: "Ajusta memoria, prioridad de hilos y delay de inyección. Valores moderados ofrecen el mejor balance." },
+            { t: "Recomendación", p: "Activa los módulos uno a uno y prueba en partida. No es necesario activar todo al mismo tiempo." },
+          ].map(({ t, p }) => (
+            <div key={t} className="bg-secondary/20 rounded-2xl p-3.5 border border-border/25 backdrop-blur-md">
+              <h3 className="text-xs font-semibold text-foreground mb-1">{t}</h3>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{p}</p>
             </div>
           ))}
         </div>
       ),
-    },
-    {
-      id: "logs",
-      icon: FileText,
-      title: "Registro de Actividad",
-      content: (
-        <div className="bg-secondary/20 rounded-lg p-3 border border-border/30 font-mono text-[9px] space-y-1.5 max-h-60 overflow-y-auto">
-          <p><span className="text-emerald-400">[{new Date().toLocaleTimeString()}]</span> <span className="text-foreground/60">Sesión iniciada — {session.name}</span></p>
-          <p><span className="text-emerald-400">[{new Date(Date.now() - 120000).toLocaleTimeString()}]</span> <span className="text-foreground/60">TLS handshake OK</span></p>
-          <p><span className="text-blue-400">[{new Date(Date.now() - 300000).toLocaleTimeString()}]</span> <span className="text-foreground/60">DNS → 1.1.1.1 (3ms)</span></p>
-          <p><span className="text-amber-400">[{new Date(Date.now() - 900000).toLocaleTimeString()}]</span> <span className="text-foreground/60">Auto-reconnect</span></p>
-        </div>
-      ),
-    },
-    {
-      id: "network-diag",
-      icon: Wifi,
-      title: "Diagnóstico de Red",
-      content: (
-        <div className="space-y-3">
-          {[
-            { test: "Ping proxy", result: "8ms", ok: true },
-            { test: "DNS resolution", result: "3ms", ok: true },
-            { test: "TLS cert", result: "Valid", ok: true },
-            { test: "Port 443", result: "Open", ok: true },
-            { test: "Port 8080", result: "Open", ok: true },
-            { test: "IPv6", result: "N/A", ok: false },
-          ].map(({ test, result, ok }) => (
-            <div key={test} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2.5 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{test}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-foreground font-mono">{result}</span>
-                <div className={`w-2 h-2 rounded-full ${ok ? "bg-emerald-500" : "bg-amber-500"}`} />
-              </div>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: "speed-integrations",
-      icon: Rocket,
-      title: "Integraciones de Rapidez",
-      content: (
-        <div className="space-y-2">
-          {[
-            { label: "TCP Fast Relay", value: "Activo" },
-            { label: "UDP Accelerator", value: "v2.1" },
-            { label: "Packet Burst Mode", value: "Enabled" },
-            { label: "Zero-Copy Socket", value: "Activo" },
-            { label: "HTTP/3 QUIC", value: "Activo" },
-            { label: "Connection Pooling", value: "128 conn" },
-            { label: "Pre-fetch DNS", value: "Enabled" },
-            { label: "Edge CDN Routing", value: "Auto" },
-            { label: "Multi-Path TCP", value: "v0.95" },
-            { label: "Kernel Bypass NIC", value: "DPDK" },
-            { label: "Async I/O Engine", value: "io_uring" },
-            { label: "TLS Session Resume", value: "Activo" },
-            { label: "Nano-Latency Mode", value: "< 1ms" },
-            { label: "Turbo Handshake", value: "0-RTT" },
-            { label: "Smart Route Select", value: "AI" },
-            { label: "Memory-Mapped I/O", value: "Enabled" },
-            { label: "Parallel Streams", value: "x16" },
-            { label: "GRO/GSO Offload", value: "Activo" },
-            { label: "Priority Queue", value: "Real-time" },
-            { label: "Hot-Path Optimizer", value: "JIT" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-mono font-medium">{value}</span>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: "fluidity-integrations",
-      icon: Sparkles,
-      title: "Fluidez y Animaciones",
-      content: (
-        <div className="space-y-2">
-          {[
-            { label: "Frame Interpolation", value: "120fps" },
-            { label: "GPU Render Pipeline", value: "Vulkan" },
-            { label: "V-Sync Override", value: "Activo" },
-            { label: "Motion Blur Filter", value: "Off" },
-            { label: "Triple Buffering", value: "Enabled" },
-            { label: "Shader Pre-Compile", value: "Activo" },
-            { label: "LOD Bias Override", value: "-1.5" },
-            { label: "Texture Streaming", value: "Async" },
-            { label: "Draw Call Batcher", value: "v3.0" },
-            { label: "Occlusion Culling", value: "GPU" },
-            { label: "Frame Pacing", value: "Adaptive" },
-            { label: "Render Thread Priority", value: "High" },
-            { label: "Anti-Stutter Engine", value: "Activo" },
-            { label: "VRAM Auto-Manage", value: "Smart" },
-            { label: "Tessellation Control", value: "Dynamic" },
-            { label: "Anisotropic Override", value: "x16" },
-            { label: "Post-FX Pipeline", value: "Optimized" },
-            { label: "Compute Dispatch", value: "Async" },
-            { label: "Jitter Compensation", value: "< 0.5ms" },
-            { label: "Adaptive Resolution", value: "Activo" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex items-center justify-between bg-secondary/20 rounded-lg px-3 py-2 border border-border/30">
-              <span className="text-[10px] text-muted-foreground">{label}</span>
-              <span className="text-[10px] text-foreground font-mono font-medium">{value}</span>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: "security-integrations",
-      icon: ShieldCheck,
-      title: "Seguridad Avanzada",
-      content: <SecurityToggles />,
     },
   ];
 
@@ -766,20 +645,20 @@ const ProxyConfig = () => {
       </div>
 
       {settingsSection === null ? (
-        <div className="space-y-2 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
-          {settingsSections.map(({ id, icon: Icon, title }) => (
+        <div className="rounded-2xl bg-card/70 border border-border/40 backdrop-blur-xl overflow-hidden animate-fade-in-up shadow-xl" style={{ animationDelay: "0.05s" }}>
+          {settingsSections.map(({ id, icon: Icon, title }, idx) => (
             <button
               key={id}
               onClick={() => setSettingsSection(id)}
-              className="w-full glass-card p-3.5 flex items-center justify-between hover:bg-card/90 active:scale-[0.98] transition-all"
+              className={`w-full px-4 py-3.5 flex items-center justify-between active:bg-secondary/40 transition-colors ${idx !== settingsSections.length - 1 ? "border-b border-border/30" : ""}`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-secondary/50 border border-border/30 flex items-center justify-center">
-                  <Icon className="w-4 h-4 text-muted-foreground" />
+                <div className="w-8 h-8 rounded-xl bg-secondary/60 border border-border/30 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-foreground/80" />
                 </div>
                 <span className="text-sm text-foreground font-medium">{title}</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground/70" />
             </button>
           ))}
         </div>
@@ -792,7 +671,7 @@ const ProxyConfig = () => {
             <ChevronRight className="w-3 h-3 rotate-180" />
             Volver
           </button>
-          <div className="glass-card p-4">
+          <div className="rounded-2xl bg-card/70 border border-border/40 backdrop-blur-xl p-4 shadow-xl">
             <h2 className="text-sm font-semibold text-foreground mb-4">
               {settingsSections.find(s => s.id === settingsSection)?.title}
             </h2>

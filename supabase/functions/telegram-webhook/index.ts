@@ -36,6 +36,20 @@ Deno.serve(async (req) => {
     } catch (e) { console.error("log fail", e); }
   };
 
+  // Borra el comprobante del bucket payment-proofs (libera almacenamiento)
+  const deleteProof = async (proofUrl?: string | null) => {
+    if (!proofUrl) return;
+    try {
+      const marker = "/payment-proofs/";
+      const idx = proofUrl.indexOf(marker);
+      if (idx === -1) return;
+      const path = decodeURIComponent(proofUrl.slice(idx + marker.length).split("?")[0]);
+      if (!path) return;
+      const { error } = await supabase.storage.from("payment-proofs").remove([path]);
+      if (error) console.error("deleteProof err", error);
+    } catch (e) { console.error("deleteProof", e); }
+  };
+
   // Aprueba un pago: genera key Activa, marca pago, edita caption si hay msg
   const approvePayment = async (id: string, adminId: string | number, chatIdForMsg?: number, messageId?: number) => {
     const { data: row } = await supabase.from("payment_requests").select("*").eq("id", id).maybeSingle();
@@ -66,7 +80,11 @@ Deno.serve(async (req) => {
       delivered_key: newK,
       resolved_at: now.toISOString(),
       updated_at: now.toISOString(),
+      proof_url: null,
     }).eq("id", id);
+
+    // Liberar almacenamiento: borrar comprobante aprobado
+    await deleteProof(row.proof_url);
 
     await log(adminId, "approve", id, { key: newK });
 
@@ -82,8 +100,10 @@ Deno.serve(async (req) => {
     if (!row) return { ok: false, msg: "No encontrado" };
     if (row.status !== "pending") return { ok: false, msg: `Ya estaba ${row.status}` };
     await supabase.from("payment_requests").update({
-      status: "rejected", resolved_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+      status: "rejected", resolved_at: new Date().toISOString(), updated_at: new Date().toISOString(), proof_url: null,
     }).eq("id", id);
+    // Liberar almacenamiento: borrar comprobante rechazado
+    await deleteProof(row.proof_url);
     await log(adminId, "reject", id);
     const cap = `RECHAZADO\n\nUsuario: ${row.user_name}\nPlan: ${row.plan_label}`;
     if (chatIdForMsg && messageId) {
