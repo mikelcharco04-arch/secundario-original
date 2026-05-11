@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
@@ -240,34 +240,35 @@ const ProxyConfig = () => {
 
   if (!session) return null;
 
-  // Animated Toggle component
+  // Animated Toggle — iOS-style smooth spring
   const AnimatedToggle = ({ label, icon, value, onChange }: { label: string; icon: React.ReactNode; value: boolean; onChange: (v: boolean) => void }) => (
     <div
-      className={`flex items-center justify-between rounded-xl px-4 py-3.5 border ${
-        value ? "bg-primary/5 border-primary/30" : "bg-secondary/30 border-border/20"
+      className={`flex items-center justify-between rounded-2xl px-4 py-3.5 border backdrop-blur-md ${
+        value ? "bg-primary/10 border-primary/30" : "bg-secondary/30 border-border/20"
       }`}
-      style={{ transition: "background 0.15s ease, border-color 0.15s ease" }}
+      style={{ transition: "background 260ms cubic-bezier(0.32, 0.72, 0, 1), border-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
     >
       <div className="flex items-center gap-3">
-        <div className={`p-1.5 rounded-lg ${value ? "bg-primary/10 text-primary" : "bg-secondary/50 text-muted-foreground"}`} style={{ transition: "all 0.15s ease" }}>
+        <div className={`p-1.5 rounded-xl ${value ? "bg-primary/15 text-primary" : "bg-secondary/50 text-muted-foreground"}`} style={{ transition: "all 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
           {icon}
         </div>
-        <span className={`text-sm font-medium ${value ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 0.15s ease" }}>{label}</span>
+        <span className={`text-sm font-medium ${value ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>{label}</span>
       </div>
       <button
         onClick={() => onChange(!value)}
-        className={`relative w-12 h-7 rounded-full flex-shrink-0 ${
-          value ? "bg-primary" : "bg-secondary border border-border/40"
+        role="switch"
+        aria-checked={value}
+        className={`relative w-[52px] h-[31px] rounded-full flex-shrink-0 ${
+          value ? "bg-emerald-500" : "bg-secondary border border-border/40"
         }`}
-        style={{ transition: "background 0.15s ease, border-color 0.15s ease" }}
+        style={{ transition: "background-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
       >
         <span
-          className={`absolute top-[3px] left-[3px] w-[22px] h-[22px] rounded-full shadow-sm ${
-            value ? "bg-primary-foreground" : "bg-muted-foreground/60"
-          }`}
+          className="absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white"
           style={{
-            transform: value ? "translateX(20px)" : "translateX(0)",
-            transition: "transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease",
+            transform: value ? "translateX(21px)" : "translateX(0)",
+            transition: "transform 260ms cubic-bezier(0.32, 0.72, 0, 1)",
+            boxShadow: "0 3px 8px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.2)",
             willChange: "transform",
           }}
         />
@@ -275,25 +276,42 @@ const ProxyConfig = () => {
     </div>
   );
 
-  // FOV Slider — fluido sin lag (onInput + sin transitions de fondo)
+  // FOV Slider — ULTRA fluido: uncontrolled + ref + CSS var, sin re-render durante arrastre
   const FovSlider = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
-    const pct = ((value - 40) / 260) * 100;
+    const inputRef = useRef<HTMLInputElement>(null);
+    const trackRef = useRef<HTMLDivElement>(null);
+    const labelRef = useRef<HTMLSpanElement>(null);
+    const rafRef = useRef<number | null>(null);
+
+    const apply = (v: number) => {
+      const pct = ((v - 40) / 260) * 100;
+      if (trackRef.current) trackRef.current.style.setProperty("--fill", `${pct}%`);
+      if (labelRef.current) labelRef.current.textContent = `${v}px`;
+    };
+
     return (
-      <div className="rounded-xl px-4 py-3 bg-secondary/20 border border-border/20">
+      <div ref={trackRef} className="rounded-2xl px-4 py-3 bg-secondary/20 border border-border/20 backdrop-blur-md" style={{ ["--fill" as any]: `${((value - 40) / 260) * 100}%` }}>
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs text-muted-foreground font-medium">Tamaño de FOV</span>
-          <span className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}px</span>
+          <span ref={labelRef} className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}px</span>
         </div>
         <input
+          ref={inputRef}
           type="range"
           min={40}
           max={300}
-          value={value}
-          onInput={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          defaultValue={value}
+          onInput={(e) => {
+            const v = Number((e.target as HTMLInputElement).value);
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = requestAnimationFrame(() => apply(v));
+          }}
+          onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          onTouchEnd={(e) => onChange(Number((e.target as HTMLInputElement).value))}
           onChange={(e) => onChange(Number(e.target.value))}
           className="w-full h-1.5 rounded-full appearance-none cursor-pointer slider-fluid"
           style={{
-            background: `linear-gradient(to right, hsl(var(--primary)) ${pct}%, hsl(var(--secondary)) ${pct}%)`,
+            background: "linear-gradient(to right, hsl(var(--primary)) var(--fill), hsl(var(--secondary)) var(--fill))",
             touchAction: "none",
           }}
         />
@@ -301,25 +319,40 @@ const ProxyConfig = () => {
     );
   };
 
-  // Performance Slider — fluido (onInput, sin animaciones de transición)
-  const PerfSlider = ({ label, icon, value, onChange, unit = "%" }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; unit?: string }) => (
-    <div className="rounded-xl px-4 py-3 bg-secondary/20 border border-border/20">
-      <div className="flex items-center justify-between mb-2.5">
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground">{icon}</span>
-          <span className="text-xs text-muted-foreground font-medium">{label}</span>
+  // Performance Slider — ultra fluido (uncontrolled + rAF + CSS var)
+  const PerfSlider = ({ label, icon, value, onChange, unit = "%" }: { label: string; icon: React.ReactNode; value: number; onChange: (v: number) => void; unit?: string }) => {
+    const wrapRef = useRef<HTMLDivElement>(null);
+    const labelRef = useRef<HTMLSpanElement>(null);
+    const rafRef = useRef<number | null>(null);
+    const apply = (v: number) => {
+      if (wrapRef.current) wrapRef.current.style.setProperty("--fill", `${v}%`);
+      if (labelRef.current) labelRef.current.textContent = `${v}${unit}`;
+    };
+    return (
+      <div ref={wrapRef} className="rounded-2xl px-4 py-3 bg-secondary/20 border border-border/20 backdrop-blur-md" style={{ ["--fill" as any]: `${value}%` }}>
+        <div className="flex items-center justify-between mb-2.5">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">{icon}</span>
+            <span className="text-xs text-muted-foreground font-medium">{label}</span>
+          </div>
+          <span ref={labelRef} className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}{unit}</span>
         </div>
-        <span className="text-xs text-foreground font-mono bg-secondary/50 px-2 py-0.5 rounded-md">{value}{unit}</span>
+        <input
+          type="range" min={0} max={100} defaultValue={value}
+          onInput={(e) => {
+            const v = Number((e.target as HTMLInputElement).value);
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = requestAnimationFrame(() => apply(v));
+          }}
+          onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          onTouchEnd={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="w-full h-1.5 rounded-full appearance-none cursor-pointer slider-fluid"
+          style={{ background: "linear-gradient(to right, hsl(var(--primary)) var(--fill), hsl(var(--secondary)) var(--fill))", touchAction: "none" }}
+        />
       </div>
-      <input
-        type="range" min={0} max={100} value={value}
-        onInput={(e) => onChange(Number((e.target as HTMLInputElement).value))}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-1.5 rounded-full appearance-none cursor-pointer slider-fluid"
-        style={{ background: `linear-gradient(to right, hsl(var(--primary)) ${value}%, hsl(var(--secondary)) ${value}%)`, touchAction: "none" }}
-      />
-    </div>
-  );
+    );
+  };
 
   const renderHome = () => (
     <div className="space-y-4">
