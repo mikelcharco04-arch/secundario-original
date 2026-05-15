@@ -73,18 +73,24 @@ const SecurityToggles = () => {
     const saved = localStorage.getItem("proxy_security_toggles");
     return saved ? JSON.parse(saved) : {};
   });
+  const [pressing, setPressing] = useState<string | null>(null);
+  const haptic = () => { if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([5, 2, 5]); };
   const toggle = (label: string) => {
     const next = { ...states, [label]: !states[label] };
     setStates(next);
     localStorage.setItem("proxy_security_toggles", JSON.stringify(next));
+    haptic();
   };
   return (
     <div className="space-y-2">
       {SECURITY_ITEMS.map((label) => (
-         <div key={label} className={`flex items-center justify-between rounded-2xl px-3.5 py-3 border backdrop-blur-md ${states[label] ? "bg-primary/10 border-primary/25" : "bg-secondary/20 border-border/25"}`} style={{ transition: "background 260ms cubic-bezier(0.32, 0.72, 0, 1), border-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
+         <div key={label} className={`flex items-center justify-between rounded-2xl px-3.5 py-3 border backdrop-blur-md ${states[label] ? "bg-primary/10 border-primary/25" : "bg-secondary/20 border-border/25"}`} style={{ transition: "background 260ms cubic-bezier(0.32, 0.72, 0, 1), border-color 260ms cubic-bezier(0.32, 0.72, 0, 1), transform 120ms ease-out", transform: pressing === label ? "scale(0.985)" : "scale(1)" }}>
            <span className={`text-[11px] font-medium ${states[label] ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>{label}</span>
            <button
              onClick={() => toggle(label)}
+             onPointerDown={() => setPressing(label)}
+             onPointerUp={() => setPressing(null)}
+             onPointerLeave={() => setPressing(null)}
              role="switch"
              aria-checked={states[label]}
              className={`relative w-[46px] h-[27px] rounded-full flex-shrink-0 ${states[label] ? "bg-emerald-500" : "bg-secondary border border-border/40"}`}
@@ -94,7 +100,7 @@ const SecurityToggles = () => {
                className="absolute top-[2px] left-[2px] w-[23px] h-[23px] rounded-full bg-white"
                style={{
                  transform: states[label] ? "translateX(19px)" : "translateX(0)",
-                 transition: "transform 260ms cubic-bezier(0.32, 0.72, 0, 1)",
+                 transition: "transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1)",
                  boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
                  willChange: "transform",
                }}
@@ -244,40 +250,47 @@ const ProxyConfig = () => {
   if (!session) return null;
 
   // Animated Toggle — iOS-style smooth spring
-  const AnimatedToggle = ({ label, icon, value, onChange }: { label: string; icon: React.ReactNode; value: boolean; onChange: (v: boolean) => void }) => (
-    <div
-      className={`flex items-center justify-between rounded-2xl px-4 py-3.5 border backdrop-blur-md ${
-        value ? "bg-primary/10 border-primary/30" : "bg-secondary/30 border-border/20"
-      }`}
-      style={{ transition: "background 260ms cubic-bezier(0.32, 0.72, 0, 1), border-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
-    >
-      <div className="flex items-center gap-3">
-        <div className={`p-1.5 rounded-xl ${value ? "bg-primary/15 text-primary" : "bg-secondary/50 text-muted-foreground"}`} style={{ transition: "all 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
-          {icon}
-        </div>
-        <span className={`text-sm font-medium ${value ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>{label}</span>
-      </div>
-      <button
-        onClick={() => onChange(!value)}
-        role="switch"
-        aria-checked={value}
-        className={`relative w-[52px] h-[31px] rounded-full flex-shrink-0 ${
-          value ? "bg-emerald-500" : "bg-secondary border border-border/40"
+  const AnimatedToggle = ({ label, icon, value, onChange }: { label: string; icon: React.ReactNode; value: boolean; onChange: (v: boolean) => void }) => {
+    const [pressing, setPressing] = useState(false);
+    const haptic = () => { if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([6, 2, 6]); };
+    return (
+      <div
+        className={`flex items-center justify-between rounded-2xl px-4 py-3.5 border backdrop-blur-md ${
+          value ? "bg-primary/10 border-primary/30" : "bg-secondary/30 border-border/20"
         }`}
-        style={{ transition: "background-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
+        style={{ transition: "background 260ms cubic-bezier(0.32, 0.72, 0, 1), border-color 260ms cubic-bezier(0.32, 0.72, 0, 1), transform 120ms ease-out", transform: pressing ? "scale(0.985)" : "scale(1)" }}
       >
-        <span
-          className="absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white"
-          style={{
-            transform: value ? "translateX(21px)" : "translateX(0)",
-            transition: "transform 260ms cubic-bezier(0.32, 0.72, 0, 1)",
-            boxShadow: "0 3px 8px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.2)",
-            willChange: "transform",
-          }}
-        />
-      </button>
-    </div>
-  );
+        <div className="flex items-center gap-3">
+          <div className={`p-1.5 rounded-xl ${value ? "bg-primary/15 text-primary" : "bg-secondary/50 text-muted-foreground"}`} style={{ transition: "all 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
+            {icon}
+          </div>
+          <span className={`text-sm font-medium ${value ? "text-foreground" : "text-muted-foreground"}`} style={{ transition: "color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}>{label}</span>
+        </div>
+        <button
+          onClick={() => { haptic(); onChange(!value); }}
+          onPointerDown={() => setPressing(true)}
+          onPointerUp={() => setPressing(false)}
+          onPointerLeave={() => setPressing(false)}
+          role="switch"
+          aria-checked={value}
+          className={`relative w-[52px] h-[31px] rounded-full flex-shrink-0 ${
+            value ? "bg-emerald-500" : "bg-secondary border border-border/40"
+          }`}
+          style={{ transition: "background-color 260ms cubic-bezier(0.32, 0.72, 0, 1)" }}
+        >
+          <span
+            className="absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white"
+            style={{
+              transform: value ? "translateX(21px)" : "translateX(0)",
+              transition: "transform 340ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+              boxShadow: "0 3px 8px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.2)",
+              willChange: "transform",
+            }}
+          />
+        </button>
+      </div>
+    );
+  };
 
   // FOV Slider — ULTRA fluido: uncontrolled + ref + CSS var, sin re-render durante arrastre
   const FovSlider = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
@@ -285,12 +298,24 @@ const ProxyConfig = () => {
     const trackRef = useRef<HTMLDivElement>(null);
     const labelRef = useRef<HTMLSpanElement>(null);
     const rafRef = useRef<number | null>(null);
+    const lastHapticRef = useRef<number>(-1);
+
+    const haptic = (pattern: number | number[] = 5) => { if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(pattern); };
 
     const apply = (v: number) => {
       const pct = ((v - 40) / 260) * 100;
       if (trackRef.current) trackRef.current.style.setProperty("--fill", `${pct}%`);
       if (labelRef.current) labelRef.current.textContent = `${v}px`;
+      // Light haptic at milestones
+      const milestones = [40, 80, 120, 160, 200, 240, 300];
+      const closest = milestones.reduce((p, c) => Math.abs(c - v) < Math.abs(p - v) ? c : p);
+      if (Math.abs(v - closest) < 4 && lastHapticRef.current !== closest) {
+        lastHapticRef.current = closest;
+        haptic(3);
+      }
     };
+
+    const release = (v: number) => { haptic(6); onChange(v); };
 
     return (
       <div ref={trackRef} className="rounded-2xl px-4 py-3 bg-secondary/20 border border-border/20 backdrop-blur-md" style={{ ["--fill" as any]: `${((value - 40) / 260) * 100}%` }}>
@@ -309,8 +334,8 @@ const ProxyConfig = () => {
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
             rafRef.current = requestAnimationFrame(() => apply(v));
           }}
-          onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
-          onTouchEnd={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          onPointerUp={(e) => release(Number((e.target as HTMLInputElement).value))}
+          onTouchEnd={(e) => release(Number((e.target as HTMLInputElement).value))}
           onChange={(e) => onChange(Number(e.target.value))}
           className="w-full h-1.5 rounded-full appearance-none cursor-pointer slider-fluid"
           style={{
@@ -327,10 +352,20 @@ const ProxyConfig = () => {
     const wrapRef = useRef<HTMLDivElement>(null);
     const labelRef = useRef<HTMLSpanElement>(null);
     const rafRef = useRef<number | null>(null);
+    const lastHapticRef = useRef<number>(-1);
+    const haptic = (pattern: number | number[] = 5) => { if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(pattern); };
     const apply = (v: number) => {
       if (wrapRef.current) wrapRef.current.style.setProperty("--fill", `${v}%`);
       if (labelRef.current) labelRef.current.textContent = `${v}${unit}`;
+      // Light haptic at milestones
+      const milestones = [0, 25, 50, 75, 100];
+      const closest = milestones.reduce((p, c) => Math.abs(c - v) < Math.abs(p - v) ? c : p);
+      if (Math.abs(v - closest) < 3 && lastHapticRef.current !== closest) {
+        lastHapticRef.current = closest;
+        haptic(3);
+      }
     };
+    const release = (v: number) => { haptic(6); onChange(v); };
     return (
       <div ref={wrapRef} className="rounded-2xl px-4 py-3 bg-secondary/20 border border-border/20 backdrop-blur-md" style={{ ["--fill" as any]: `${value}%` }}>
         <div className="flex items-center justify-between mb-2.5">
@@ -347,8 +382,8 @@ const ProxyConfig = () => {
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
             rafRef.current = requestAnimationFrame(() => apply(v));
           }}
-          onPointerUp={(e) => onChange(Number((e.target as HTMLInputElement).value))}
-          onTouchEnd={(e) => onChange(Number((e.target as HTMLInputElement).value))}
+          onPointerUp={(e) => release(Number((e.target as HTMLInputElement).value))}
+          onTouchEnd={(e) => release(Number((e.target as HTMLInputElement).value))}
           onChange={(e) => onChange(Number(e.target.value))}
           className="w-full h-1.5 rounded-full appearance-none cursor-pointer slider-fluid"
           style={{ background: "linear-gradient(to right, hsl(var(--primary)) var(--fill), hsl(var(--secondary)) var(--fill))", touchAction: "none" }}
