@@ -79,7 +79,7 @@ const Login = () => {
             </div>
           </div>
           <div className="flex items-center gap-1.5 mb-1">
-            <h1 className="text-lg font-bold text-foreground tracking-tight">L-GAN & HFFX4</h1>
+            <h1 className="text-lg font-bold text-foreground tracking-tight">Ryuk Auxiliar</h1>
             <VerifiedBadge />
           </div>
           <p className="text-[10px] text-muted-foreground/70 tracking-widest uppercase">Secure Gateway v2.4</p>
@@ -156,19 +156,6 @@ const Login = () => {
               ) : "Conectar"}
             </button>
 
-            <button
-              type="button"
-              onClick={() => navigate("/pay")}
-              className="relative w-full overflow-hidden rounded-lg py-3 text-sm font-bold text-white active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
-              style={{
-                background: "linear-gradient(135deg, hsl(199 89% 48%), hsl(217 91% 60%), hsl(190 95% 50%))",
-                boxShadow: "0 8px 24px -4px hsl(199 89% 48% / 0.55), 0 0 0 1px hsl(199 89% 70% / 0.35) inset",
-              }}
-            >
-              <Sparkles className="w-4 h-4" />
-              <span className="tracking-wide">COMPRAR KEY</span>
-              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
-            </button>
 
             <a
               href="https://whatsapp.com/channel/0029VbC678PIyPtc7iERCH2R"
