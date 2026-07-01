@@ -519,7 +519,7 @@ const ProxyConfig = () => {
     ];
 
     for (const [delay, msg] of steps) {
-      setProgressMsg(msg);
+      setProgressMsg(msg as string);
       await new Promise(r => setTimeout(r, delay as number));
     }
 
