@@ -4,7 +4,7 @@ import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { Shield, KeyRound, User, Lock, Fingerprint, Sparkles, MessageCircle } from "lucide-react";
 import { validateKey, activateKey, registerActiveUser } from "@/lib/keys";
-import defaultAvatar from "@/assets/login-avatar.jpeg";
+const defaultAvatar = "/login-avatar.jpeg";
 
 const Login = () => {
   const [name, setName] = useState("");

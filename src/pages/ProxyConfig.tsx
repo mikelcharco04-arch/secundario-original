@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { isUserBlocked } from "@/lib/keys";
-import avatar from "@/assets/login-avatar.jpeg";
+const avatar = "/login-avatar.jpeg";
+const creatorImg = "/creator-rave.png";
 import {
   Home, Settings, LogOut, Gamepad2, Loader2, Download,
   Shield, FileText, Info, ChevronRight, Lock, Eye, ScrollText,
