@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { isUserBlocked } from "@/lib/keys";
-import avatar from "@/assets/login-avatar.jpeg";
+const avatar = "/login-avatar.jpeg";
+const creatorImg = "/creator-rave.png";
 import {
   Home, Settings, LogOut, Gamepad2, Loader2, Download,
   Shield, FileText, Info, ChevronRight, Lock, Eye, ScrollText,
   Fingerprint, ShieldCheck, KeyRound, AlertTriangle, Sparkles, Check,
-  Skull, Bomb, Radiation, Siren,
+  Skull, Bomb, Radiation, Siren, MessageCircle, User,
 } from "lucide-react";
 
 interface Session {
@@ -518,7 +519,7 @@ const ProxyConfig = () => {
     ];
 
     for (const [delay, msg] of steps) {
-      setProgressMsg(msg);
+      setProgressMsg(msg as string);
       await new Promise(r => setTimeout(r, delay as number));
     }
 
@@ -744,8 +745,44 @@ const ProxyConfig = () => {
         )}
 
         {activeTab === "settings" && !settingsSection && (
-          <div className="space-y-2.5 animate-fade-in-up">
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60 px-1 mb-1">Información</p>
+          <div className="space-y-3 animate-fade-in-up">
+            {/* Creator card */}
+            <div className="glass-card p-5 rounded-3xl overflow-hidden relative">
+              <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ background: "radial-gradient(120% 80% at 0% 0%, hsl(199 89% 48% / 0.35), transparent 60%)" }} />
+              <div className="relative flex items-center gap-4">
+                <div className="p-[2.5px] rounded-2xl bg-gradient-to-tr from-sky-400 via-blue-500 to-cyan-300 shadow-[0_0_22px_rgba(56,189,248,0.45)]">
+                  <div className="p-[1.5px] rounded-2xl bg-background">
+                    <img
+                      src={creatorImg}
+                      alt="Creador"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-16 h-16 rounded-2xl object-cover object-center"
+                    />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <h3 className="text-sm font-bold text-foreground truncate">Modifaxff Oficial</h3>
+                    <VerifiedBadge />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground/80 mt-0.5">Creador de Ryuk Auxiliar</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-0.5">Contenido, soporte y actualizaciones</p>
+                </div>
+              </div>
+              <a
+                href="https://whatsapp.com/channel/0029VbC678PIyPtc7iERCH2R"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => haptic(6)}
+                className="relative mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-xs font-semibold text-emerald-200 bg-emerald-500/15 border border-emerald-500/35 hover:bg-emerald-500/20 active:scale-[0.985] transition-all"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                Seguir al creador · WhatsApp
+              </a>
+            </div>
+
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60 px-1 mb-1 pt-2">Información</p>
             <SettingsItem icon={Shield} label="Datos de seguridad" id="security" badge="AES-256" />
             <SettingsItem icon={ScrollText} label="Información y políticas" id="policy" />
             <SettingsItem icon={Info} label="Acerca de" id="about" badge="v2.4" />

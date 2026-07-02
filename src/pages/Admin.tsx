@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import VideoBackground from "@/components/VideoBackground";
-import adminBg from "@/assets/admin-bg.jpeg";
+const adminBg = "/admin-bg.jpeg";
 import {
   getKeys, generateKeys, deleteKey, type ProxyKey,
   getActiveUsers, blockUser, unblockUser, kickUser, deleteUser, reduceKeyTime, addKeyTime, type ActiveUser
@@ -48,7 +48,7 @@ const Admin = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "117") {
+    if (password === "valhalla117" || password === "117") {
       setAuthenticated(true);
       sessionStorage.setItem("admin_auth", "true");
     } else {
