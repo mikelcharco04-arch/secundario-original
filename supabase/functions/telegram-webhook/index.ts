@@ -213,13 +213,33 @@ Deno.serve(async (req) => {
         return new Response("ok");
       }
 
-      let sess = sessions.get(chatId);
-      if (!sess) { sess = { authed: false }; sessions.set(chatId, sess); }
+      // ---- Cargar sesión persistida ----
+      const loadSession = async (): Promise<BotSession> => {
+        const { data } = await supabase.from("telegram_bot_sessions")
+          .select("authed,step,duration,key_type").eq("chat_id", chatId).maybeSingle();
+        return data
+          ? { authed: !!data.authed, step: data.step, duration: data.duration, keyType: data.key_type }
+          : { authed: false };
+      };
+      const saveSession = async (s: BotSession) => {
+        await supabase.from("telegram_bot_sessions").upsert({
+          chat_id: chatId,
+          authed: s.authed,
+          step: s.step ?? null,
+          duration: s.duration ?? null,
+          key_type: s.keyType ?? null,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "chat_id" });
+      };
+      const clearSession = async () => {
+        await supabase.from("telegram_bot_sessions").delete().eq("chat_id", chatId);
+      };
+
+      const sess = await loadSession();
 
       // ---- /start SIEMPRE responde y pide contraseña ----
       if (text === "/start") {
-        sess.authed = false;
-        sess.step = "await_password";
+        await saveSession({ authed: false, step: "await_password" });
         await tgFetch("sendMessage", {
           chat_id: chatId,
           text: "Bienvenido a Rave Auxiliar Bot\n\nIntroduce la contraseña para continuar:",
@@ -229,10 +249,9 @@ Deno.serve(async (req) => {
       }
 
       // ---- Verificación de contraseña ----
-      if (sess.step === "await_password" || !sess.authed) {
+      if (!sess.authed) {
         if (text === BOT_PASSWORD) {
-          sess.authed = true;
-          sess.step = undefined;
+          await saveSession({ authed: true, step: null });
           await reply("Acceso concedido. Menú principal:", mainKeyboard);
         } else {
           await tgFetch("sendMessage", {
@@ -246,20 +265,19 @@ Deno.serve(async (req) => {
 
       // ---- Cancelar / Salir ----
       if (text === "Cancelar") {
-        sess.step = undefined; sess.duration = undefined; sess.keyType = undefined;
+        await saveSession({ authed: true, step: null });
         await reply("Cancelado.", mainKeyboard);
         return new Response("ok");
       }
       if (text === "Salir" || text === "/logout") {
-        sessions.delete(chatId);
+        await clearSession();
         await tgFetch("sendMessage", { chat_id: chatId, text: "Sesión cerrada. Envía /start para volver a entrar.", reply_markup: passwordKeyboard });
         return new Response("ok");
       }
 
       // ---- Flujo Generar Key ----
       if (text === "Generar Key" || text === "/generar") {
-        sess.step = "gen_duration";
-        sess.keyType = "Normal";
+        await saveSession({ authed: true, step: "gen_duration", keyType: "Normal" });
         await reply("Elige la duración de la key:", durationKeyboard);
         return new Response("ok");
       }
@@ -268,8 +286,7 @@ Deno.serve(async (req) => {
           await reply("Duración no válida. Elige una opción:", durationKeyboard);
           return new Response("ok");
         }
-        sess.duration = text;
-        sess.step = "gen_qty";
+        await saveSession({ authed: true, step: "gen_qty", keyType: sess.keyType || "Normal", duration: text });
         await reply(`Duración: ${text}\nAhora elige la cantidad:`, qtyKeyboard);
         return new Response("ok");
       }
@@ -280,7 +297,7 @@ Deno.serve(async (req) => {
           return new Response("ok");
         }
         try {
-          const keys = await backendGenerateKeys(qty, sess.keyType || "Normal", sess.duration!);
+          const keys = await backendGenerateKeys(qty, (sess.keyType as any) || "Normal", sess.duration!);
           await log(fromId, "generarkey", `${qty}`, { duration: sess.duration, keys });
           const preview = keys.slice(0, 25).join("\n");
           const extra = keys.length > 25 ? `\n… (+${keys.length - 25} más)` : "";
@@ -288,9 +305,11 @@ Deno.serve(async (req) => {
         } catch (e: any) {
           await reply("Error al generar: " + (e?.message || "x"), mainKeyboard);
         }
-        sess.step = undefined; sess.duration = undefined;
+        await saveSession({ authed: true, step: null });
         return new Response("ok");
       }
+
+
 
       // ---- Botones del menú principal ----
       if (text === "Stock" || text === "/stockkeys") {
