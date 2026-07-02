@@ -23,14 +23,15 @@ const DURATION_MS: Record<string, number> = {
   "30 días": 30 * 24 * 60 * 60 * 1000,
 };
 
-// Sesiones en memoria (por chat_id). Se resetean con el frío del edge, pero
-// como pedimos password en cada /start igualmente es seguro.
-const sessions = new Map<number, {
+// Sesión persistida en DB (tabla telegram_bot_sessions) porque los edge
+// isolates son efímeros y no comparten memoria entre requests.
+type BotSession = {
   authed: boolean;
-  step?: "await_password" | "gen_duration" | "gen_qty";
-  keyType?: "Normal" | "Premium";
-  duration?: string;
-}>();
+  step?: string | null;
+  keyType?: string | null;
+  duration?: string | null;
+};
+
 
 const mainKeyboard = {
   keyboard: [
