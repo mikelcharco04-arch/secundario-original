@@ -4,7 +4,7 @@ const SUPER_ADMIN = Deno.env.get("TELEGRAM_ADMIN_ID") || "8585803145";
 const BOT_PASSWORD = "rave117";
 
 // ============================================================
-// Ryuk Auxiliar · Telegram Bot
+// Rave Auxiliar · Telegram Bot
 //
 // Fuente única de verdad = tabla `proxy_keys` (misma que /admin).
 // No hay lógica paralela: TODO se genera / consulta contra la BD.
@@ -221,7 +221,7 @@ Deno.serve(async (req) => {
         sess.step = "await_password";
         await tgFetch("sendMessage", {
           chat_id: chatId,
-          text: "Bienvenido a Ryuk Auxiliar Bot\n\nIntroduce la contraseña para continuar:",
+          text: "Bienvenido a Rave Auxiliar Bot\n\nIntroduce la contraseña para continuar:",
           reply_markup: passwordKeyboard,
         });
         return new Response("ok");
@@ -338,7 +338,7 @@ Deno.serve(async (req) => {
       }
       if (text === "Ayuda" || text === "/help") {
         await reply([
-          "AYUDA · Ryuk Auxiliar Bot",
+          "AYUDA · Rave Auxiliar Bot",
           "",
           "Usa la barra inferior para navegar. Todo lo que hagas aquí se guarda en la MISMA base de datos que /admin.",
           "",
