@@ -326,6 +326,33 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_bot_sessions: {
+        Row: {
+          authed: boolean
+          chat_id: number
+          duration: string | null
+          key_type: string | null
+          step: string | null
+          updated_at: string
+        }
+        Insert: {
+          authed?: boolean
+          chat_id: number
+          duration?: string | null
+          key_type?: string | null
+          step?: string | null
+          updated_at?: string
+        }
+        Update: {
+          authed?: boolean
+          chat_id?: number
+          duration?: string | null
+          key_type?: string | null
+          step?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
