@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const SUPER_ADMIN = Deno.env.get("TELEGRAM_ADMIN_ID") || "8585803145";
-const BOT_PASSWORD = "valhalla117";
+const BOT_PASSWORD = "rave117";
 
 // ============================================================
 // Ryuk Auxiliar · Telegram Bot
