@@ -592,12 +592,12 @@ const ProxyConfig = () => {
           <div className="flex items-center gap-3">
             <div className="p-[2px] rounded-full bg-gradient-to-tr from-sky-400 via-blue-500 to-cyan-300 shadow-[0_0_18px_rgba(56,189,248,0.45)]">
               <div className="p-[1.5px] rounded-full bg-background">
-                <img src={avatar} alt="Ryuk" className="w-11 h-11 rounded-full object-cover" />
+                <img src={avatar} alt="Rave" className="w-11 h-11 rounded-full object-cover" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-1">
-                <h1 className="text-sm font-bold text-foreground leading-tight">Ryuk Auxiliar</h1>
+                <h1 className="text-sm font-bold text-foreground leading-tight">Rave Auxiliar</h1>
                 <VerifiedBadge />
               </div>
               <p className="text-[10px] text-muted-foreground/70 font-mono">{session.name}</p>
@@ -766,7 +766,7 @@ const ProxyConfig = () => {
                     <h3 className="text-sm font-bold text-foreground truncate">Modifaxff Oficial</h3>
                     <VerifiedBadge />
                   </div>
-                  <p className="text-[11px] text-muted-foreground/80 mt-0.5">Creador de Ryuk Auxiliar</p>
+                  <p className="text-[11px] text-muted-foreground/80 mt-0.5">Creador de Rave Auxiliar</p>
                   <p className="text-[10px] text-muted-foreground/60 mt-0.5">Contenido, soporte y actualizaciones</p>
                 </div>
               </div>
@@ -841,7 +841,7 @@ const ProxyConfig = () => {
                     <h3 className="text-sm font-bold text-foreground">Acerca de</h3>
                   </div>
                   <div className="text-[11px] text-muted-foreground space-y-2 leading-relaxed">
-                    <p><span className="text-foreground font-semibold">Ryuk Auxiliar</span> v2.4 — Build estable.</p>
+                    <p><span className="text-foreground font-semibold">Rave Auxiliar</span> v2.4 — Build estable.</p>
                     <p>Desarrollado por Modifaxff Oficial.</p>
                     <p>Compatible con Free Fire y Free Fire MAX.</p>
                   </div>
