@@ -70,7 +70,7 @@ const Login = () => {
         {/* Logo con anillo animado */}
         <div className="flex flex-col items-center mb-7">
           <div className="relative mb-4">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-sky-500/50 via-blue-500/40 to-cyan-300/50 blur-2xl scale-110 animate-pulse-slow" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-sky-500/50 via-blue-500/40 to-cyan-300/50 blur-2xl scale-110 animate-pulse" />
             <div className="relative p-[2.5px] rounded-full bg-gradient-to-tr from-sky-400 via-blue-500 to-cyan-300 shadow-[0_0_40px_rgba(56,189,248,0.5)]">
               <div className="p-[3px] rounded-full bg-background">
                 <div className="w-28 h-28 rounded-full overflow-hidden bg-black flex items-center justify-center">
