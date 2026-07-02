@@ -46,9 +46,29 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    text-rendering: optimizeSpeed;
+  }
+
+  /* Promote scrolling surfaces to their own compositor layer for 60fps scroll */
+  .glass-card,
+  .animate-fade-in-up {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  img, video {
+    content-visibility: auto;
   }
 }
 
