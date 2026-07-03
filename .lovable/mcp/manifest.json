@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "rave-auxiliar-mcp",
+      "version": "0.1.0",
+      "title": "Rave Auxiliar MCP"
+    },
+    "tools": [
+      {
+        "name": "list_keys",
+        "title": "List proxy keys",
+        "description": "List proxy keys, optionally filtered by status (Activa, Usada, Expirada, Bloqueada).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "Activa",
+                "Usada",
+                "Expirada",
+                "Bloqueada"
+              ],
+              "description": "Filter by status."
+            },
+            "limit": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "description": "Max rows to return (default 50)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "generate_keys",
+        "title": "Generate proxy keys",
+        "description": "Generate one or more proxy keys with a given type and duration. Uses same schema as the admin panel.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Number of keys to generate (1-50)."
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Normal",
+                "Premium"
+              ],
+              "description": "Key type."
+            },
+            "duration": {
+              "type": "string",
+              "enum": [
+                "1 minuto",
+                "1 día",
+                "7 días",
+                "30 días"
+              ],
+              "description": "Key duration."
+            }
+          },
+          "required": [
+            "count",
+            "type",
+            "duration"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_active_users",
+        "title": "List active users",
+        "description": "List currently active/logged-in users of the proxy.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "description": "Max rows (default 50)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "set_user_blocked",
+        "title": "Block or unblock user",
+        "description": "Set the blocked state for an active user identified by their key.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The proxy key of the user."
+            },
+            "blocked": {
+              "type": "boolean",
+              "description": "True to block, false to unblock."
+            }
+          },
+          "required": [
+            "key",
+            "blocked"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_stock",
+        "title": "Get key stock",
+        "description": "Return counts of available (Activa) proxy keys grouped by type and duration.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
