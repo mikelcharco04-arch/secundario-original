@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { isUserBlocked } from "@/lib/keys";
-const avatar = "/login-avatar.jpeg";
-const creatorImg = "/creator-rave.png";
+import ffh4xLogo from "@/assets/ffh4x-logo.jpeg.asset.json";
+const avatar = ffh4xLogo.url;
+const creatorImg = ffh4xLogo.url;
 import {
   Home, Settings, LogOut, Gamepad2, Loader2, Download,
   Shield, FileText, Info, ChevronRight, Lock, Eye, ScrollText,
   Fingerprint, ShieldCheck, KeyRound, AlertTriangle, Sparkles, Check,
-  Skull, Bomb, Radiation, Siren, MessageCircle, User,
+  Skull, Bomb, Radiation, Siren, MessageCircle, User, Cpu, Activity, Wifi, Zap,
 } from "lucide-react";
 
 interface Session {
