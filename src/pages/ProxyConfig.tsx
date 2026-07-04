@@ -493,10 +493,7 @@ const ProxyConfig = () => {
     }, 5000);
     return () => clearInterval(poll);
   }, [session, navigate]);
-
-
-
-
+  useEffect(() => {
     if (!session?.expiresAt) return;
     const interval = setInterval(() => {
       const diff = new Date(session.expiresAt!).getTime() - Date.now();
