@@ -645,14 +645,35 @@ const ProxyConfig = () => {
         {activeTab === "home" && (
           <div className="flex flex-col gap-4 animate-fade-in-up">
             {/* Hero card */}
-            <div className="glass-card glow-border p-5 rounded-3xl text-center">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 mb-3">
-                <Sparkles className="w-3 h-3 text-primary" />
-                <span className="text-[9px] uppercase tracking-widest text-primary font-semibold">Gateway Online</span>
+            <div className="relative overflow-hidden rounded-3xl p-5 border border-white/10 bg-gradient-to-br from-rose-500/15 via-black/40 to-red-900/10 backdrop-blur-xl">
+              <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-rose-500/20 blur-3xl" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[9px] uppercase tracking-widest text-emerald-300 font-semibold">Gateway Online</span>
+                </div>
+                <h2 className="text-lg font-bold text-foreground mb-1 tracking-tight">Panel de Control</h2>
+                <p className="text-[11px] text-muted-foreground/80 leading-relaxed">
+                  Sistema operativo. Inyecta módulos y accede al juego con conexión cifrada.
+                </p>
               </div>
-              <h2 className="text-base font-bold text-foreground mb-1">Panel de Control</h2>
-              <p className="text-[11px] text-muted-foreground/80">Inyecta los módulos y abre Free Fire para comenzar.</p>
             </div>
+
+            {/* Métricas rápidas */}
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                { icon: Activity, label: "Ping", value: "24ms", color: "text-emerald-400" },
+                { icon: Wifi, label: "Red", value: "Estable", color: "text-sky-400" },
+                { icon: Cpu, label: "Módulos", value: injected ? "ON" : "OFF", color: injected ? "text-emerald-400" : "text-muted-foreground" },
+              ].map(({ icon: Icon, label, value, color }) => (
+                <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md p-3 flex flex-col items-center gap-1">
+                  <Icon className={`w-4 h-4 ${color}`} />
+                  <span className="text-[9px] uppercase tracking-widest text-muted-foreground/70">{label}</span>
+                  <span className="text-[11px] font-semibold text-foreground">{value}</span>
+                </div>
+              ))}
+            </div>
+
 
             {/* Inyectar Modulos */}
             <button
