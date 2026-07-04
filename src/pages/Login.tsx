@@ -5,8 +5,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { Shield, KeyRound, User, Lock, Fingerprint, ArrowRight } from "lucide-react";
 import { validateKey, activateKey, registerActiveUser } from "@/lib/keys";
 import raveCharacter from "@/assets/rave-character.png.asset.json";
-
-const raveLogo = "/rave-logo.png";
+import ffh4xLogo from "@/assets/ffh4x-logo.jpeg.asset.json";
 
 const Login = () => {
   const [name, setName] = useState("");
@@ -63,22 +62,31 @@ const Login = () => {
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center px-5 py-8 overflow-hidden">
       <VideoBackground />
-
-      {/* Soft gradient veil */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/55 to-black/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/60 to-black/85 pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-sm animate-fade-in-up">
-        {/* Logo con anillo animado */}
-        <div className="flex flex-col items-center mb-7">
+        {/* Cabecera: personaje + avatar */}
+        <div className="relative flex flex-col items-center mb-7 pt-6">
+          {/* Personaje Pocoyó apuntando al avatar */}
+          <img
+            src={raveCharacter.url}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none select-none absolute left-1 top-4 w-20 h-auto drop-shadow-[0_10px_25px_rgba(56,189,248,0.35)] animate-fade-in-up"
+            style={{ transform: "rotate(-4deg)" }}
+            loading="eager"
+            decoding="async"
+          />
+
           <div className="relative mb-4">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-sky-500/50 via-blue-500/40 to-cyan-300/50 blur-2xl scale-110 animate-pulse" />
-            <div className="relative p-[2.5px] rounded-full bg-gradient-to-tr from-sky-400 via-blue-500 to-cyan-300 shadow-[0_0_40px_rgba(56,189,248,0.5)]">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-rose-500/40 via-red-500/30 to-orange-300/40 blur-2xl scale-110 animate-pulse" />
+            <div className="relative p-[2.5px] rounded-full bg-gradient-to-tr from-rose-400 via-red-500 to-orange-300 shadow-[0_0_40px_rgba(244,63,94,0.45)]">
               <div className="p-[3px] rounded-full bg-background">
                 <div className="w-28 h-28 rounded-full overflow-hidden bg-black flex items-center justify-center">
                   <img
-                    src={raveLogo}
-                    alt="Rave"
-                    className="w-full h-full object-contain scale-105"
+                    src={ffh4xLogo.url}
+                    alt="Ump & Famosos"
+                    className="w-full h-full object-cover"
                     loading="eager"
                     decoding="async"
                   />
@@ -88,7 +96,7 @@ const Login = () => {
           </div>
 
           <div className="flex items-center gap-1.5 mb-1">
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Rave</h1>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">Ump & Famosos</h1>
             <VerifiedBadge />
           </div>
           <p className="text-[10px] text-muted-foreground/70 tracking-[0.25em] uppercase">Secure Gateway · v2.4</p>
@@ -114,7 +122,7 @@ const Login = () => {
           <div className="relative rounded-[24px] bg-black/45 backdrop-blur-2xl border border-white/10 p-5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)]">
             <div className="flex items-center gap-2.5 mb-5">
               <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-sky-300" />
+                <Shield className="w-4 h-4 text-rose-300" />
               </div>
               <div>
                 <span className="text-sm text-foreground font-semibold block leading-tight">Acceso Seguro</span>
@@ -126,13 +134,13 @@ const Login = () => {
               <div>
                 <label className="text-[10px] text-muted-foreground/70 uppercase tracking-wider font-semibold mb-1.5 block">Usuario</label>
                 <div className="relative group">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 transition-colors group-focus-within:text-sky-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 transition-colors group-focus-within:text-rose-400" />
                   <input
                     type="text"
                     placeholder="Tu nombre"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-sky-400/50 focus:bg-white/[0.06] transition-all"
+                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-rose-400/50 focus:bg-white/[0.06] transition-all"
                   />
                 </div>
               </div>
@@ -140,13 +148,13 @@ const Login = () => {
               <div>
                 <label className="text-[10px] text-muted-foreground/70 uppercase tracking-wider font-semibold mb-1.5 block">Key de acceso</label>
                 <div className="relative group">
-                  <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 transition-colors group-focus-within:text-sky-400" />
+                  <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 transition-colors group-focus-within:text-rose-400" />
                   <input
                     type="text"
                     placeholder="PROXY-XXXX-XXXX"
                     value={key}
                     onChange={(e) => setKey(e.target.value)}
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-sky-400/50 focus:bg-white/[0.06] transition-all font-mono tracking-wide"
+                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-rose-400/50 focus:bg-white/[0.06] transition-all font-mono tracking-wide"
                   />
                 </div>
               </div>
@@ -157,37 +165,25 @@ const Login = () => {
                 </p>
               )}
 
-              <div className="relative">
-                {/* Personaje apuntando hacia el botón Conectar */}
-                <img
-                  src={raveCharacter.url}
-                  alt=""
-                  aria-hidden="true"
-                  className="pointer-events-none select-none absolute -top-16 -right-3 w-24 h-auto drop-shadow-[0_10px_25px_rgba(56,189,248,0.45)] animate-fade-in-up"
-                  style={{ transform: "scaleX(-1) rotate(-8deg)" }}
-                  loading="eager"
-                  decoding="async"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="group w-full relative overflow-hidden bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold py-3.5 rounded-xl text-sm active:scale-[0.98] transition-all disabled:opacity-50 shadow-[0_10px_30px_-8px_rgba(56,189,248,0.55)] hover:shadow-[0_15px_40px_-8px_rgba(56,189,248,0.7)]"
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    {loading ? (
-                      <>
-                        <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                        Verificando...
-                      </>
-                    ) : (
-                      <>
-                        Conectar
-                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                      </>
-                    )}
-                  </span>
-                </button>
-              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="group w-full relative overflow-hidden bg-gradient-to-r from-rose-500 to-red-600 text-white font-semibold py-3.5 rounded-xl text-sm active:scale-[0.98] transition-all disabled:opacity-50 shadow-[0_10px_30px_-8px_rgba(244,63,94,0.55)] hover:shadow-[0_15px_40px_-8px_rgba(244,63,94,0.7)]"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {loading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      Verificando...
+                    </>
+                  ) : (
+                    <>
+                      Conectar
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </span>
+              </button>
             </form>
           </div>
         </div>

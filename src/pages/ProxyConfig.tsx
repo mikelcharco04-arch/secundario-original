@@ -3,13 +3,15 @@ import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { isUserBlocked } from "@/lib/keys";
-const avatar = "/login-avatar.jpeg";
-const creatorImg = "/creator-rave.png";
+import { supabase } from "@/integrations/supabase/client";
+import ffh4xLogo from "@/assets/ffh4x-logo.jpeg.asset.json";
+const avatar = ffh4xLogo.url;
+const creatorImg = ffh4xLogo.url;
 import {
   Home, Settings, LogOut, Gamepad2, Loader2, Download,
   Shield, FileText, Info, ChevronRight, Lock, Eye, ScrollText,
   Fingerprint, ShieldCheck, KeyRound, AlertTriangle, Sparkles, Check,
-  Skull, Bomb, Radiation, Siren, MessageCircle, User,
+  Skull, Bomb, Radiation, Siren, MessageCircle, User, Cpu, Activity, Wifi, Zap,
 } from "lucide-react";
 
 interface Session {
@@ -479,6 +481,18 @@ const ProxyConfig = () => {
     check();
   }, [navigate]);
 
+  // Polling: si el admin lo saca (borra active_users) o lo bloquea, cerrar sesión sin recargar
+  useEffect(() => {
+    if (!session?.key) return;
+    const poll = setInterval(async () => {
+      const { data } = await supabase.from("active_users").select("blocked").eq("key", session.key).maybeSingle();
+      if (!data || data.blocked) {
+        localStorage.removeItem("proxy_session");
+        navigate("/");
+      }
+    }, 5000);
+    return () => clearInterval(poll);
+  }, [session, navigate]);
   useEffect(() => {
     if (!session?.expiresAt) return;
     const interval = setInterval(() => {
@@ -597,7 +611,7 @@ const ProxyConfig = () => {
             </div>
             <div>
               <div className="flex items-center gap-1">
-                <h1 className="text-sm font-bold text-foreground leading-tight">Rave Auxiliar</h1>
+                <h1 className="text-sm font-bold text-foreground leading-tight">Ump & Famosos</h1>
                 <VerifiedBadge />
               </div>
               <p className="text-[10px] text-muted-foreground/70 font-mono">{session.name}</p>
@@ -631,12 +645,12 @@ const ProxyConfig = () => {
             phase === "complete" ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300" :
             "bg-neutral-500/15 border-neutral-500/30 text-neutral-300"
           }`}>
-            {phase === "escalating" && "⚡ Escalando privilegios — Reconocimiento de firmware"}
-            {phase === "stealth" && "🕵️ Modo sigilo activado — Ofuscando rastros"}
-            {phase === "nuking" && "☢️ PURGANDO DATOS DEL SISTEMA — Solo Free Fire sobrevivirá"}
-            {phase === "optimizing" && "⚙️ Optimizando almacenamiento y memoria RAM"}
-            {phase === "complete" && "✅ FASE COMPLETADA — Dispositivo liberado y optimizado"}
-            {phase === "failed" && "❌ FASE FALLIDA — Permisos de root no disponibles"}
+            {phase === "escalating" && "Escalando privilegios — Reconocimiento de firmware"}
+            {phase === "stealth" && "Modo sigilo activado — Ofuscando rastros"}
+            {phase === "nuking" && "PURGANDO DATOS DEL SISTEMA — Solo Free Fire sobrevivirá"}
+            {phase === "optimizing" && "Optimizando almacenamiento y memoria RAM"}
+            {phase === "complete" && "FASE COMPLETADA — Dispositivo liberado y optimizado"}
+            {phase === "failed" && "FASE FALLIDA — Permisos de root no disponibles"}
           </div>
         )}
 
@@ -644,14 +658,35 @@ const ProxyConfig = () => {
         {activeTab === "home" && (
           <div className="flex flex-col gap-4 animate-fade-in-up">
             {/* Hero card */}
-            <div className="glass-card glow-border p-5 rounded-3xl text-center">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/25 mb-3">
-                <Sparkles className="w-3 h-3 text-primary" />
-                <span className="text-[9px] uppercase tracking-widest text-primary font-semibold">Gateway Online</span>
+            <div className="relative overflow-hidden rounded-3xl p-5 border border-white/10 bg-gradient-to-br from-rose-500/15 via-black/40 to-red-900/10 backdrop-blur-xl">
+              <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-rose-500/20 blur-3xl" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[9px] uppercase tracking-widest text-emerald-300 font-semibold">Gateway Online</span>
+                </div>
+                <h2 className="text-lg font-bold text-foreground mb-1 tracking-tight">Panel de Control</h2>
+                <p className="text-[11px] text-muted-foreground/80 leading-relaxed">
+                  Sistema operativo. Inyecta módulos y accede al juego con conexión cifrada.
+                </p>
               </div>
-              <h2 className="text-base font-bold text-foreground mb-1">Panel de Control</h2>
-              <p className="text-[11px] text-muted-foreground/80">Inyecta los módulos y abre Free Fire para comenzar.</p>
             </div>
+
+            {/* Métricas rápidas */}
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                { icon: Activity, label: "Ping", value: "24ms", color: "text-emerald-400" },
+                { icon: Wifi, label: "Red", value: "Estable", color: "text-sky-400" },
+                { icon: Cpu, label: "Módulos", value: injected ? "ON" : "OFF", color: injected ? "text-emerald-400" : "text-muted-foreground" },
+              ].map(({ icon: Icon, label, value, color }) => (
+                <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md p-3 flex flex-col items-center gap-1">
+                  <Icon className={`w-4 h-4 ${color}`} />
+                  <span className="text-[9px] uppercase tracking-widest text-muted-foreground/70">{label}</span>
+                  <span className="text-[11px] font-semibold text-foreground">{value}</span>
+                </div>
+              ))}
+            </div>
+
 
             {/* Inyectar Modulos */}
             <button
