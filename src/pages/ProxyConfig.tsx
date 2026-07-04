@@ -480,7 +480,21 @@ const ProxyConfig = () => {
     check();
   }, [navigate]);
 
+  // Polling: si el admin lo saca (borra active_users) o lo bloquea, cerrar sesión sin recargar
   useEffect(() => {
+    if (!session?.key) return;
+    const { supabase } = require("@/integrations/supabase/client");
+    const poll = setInterval(async () => {
+      const { data } = await supabase.from("active_users").select("blocked").eq("key", session.key).maybeSingle();
+      if (!data || data.blocked) {
+        localStorage.removeItem("proxy_session");
+        navigate("/");
+      }
+    }, 5000);
+    return () => clearInterval(poll);
+  }, [session, navigate]);
+
+
     if (!session?.expiresAt) return;
     const interval = setInterval(() => {
       const diff = new Date(session.expiresAt!).getTime() - Date.now();
