@@ -4,6 +4,7 @@ import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { Shield, KeyRound, User, Lock, Fingerprint, ArrowRight } from "lucide-react";
 import { validateKey, activateKey, registerActiveUser } from "@/lib/keys";
+import raveCharacter from "@/assets/rave-character.png.asset.json";
 
 const raveLogo = "/rave-logo.png";
 
