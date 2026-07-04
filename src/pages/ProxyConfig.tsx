@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { isUserBlocked } from "@/lib/keys";
+import { supabase } from "@/integrations/supabase/client";
 import ffh4xLogo from "@/assets/ffh4x-logo.jpeg.asset.json";
 const avatar = ffh4xLogo.url;
 const creatorImg = ffh4xLogo.url;
@@ -483,7 +484,6 @@ const ProxyConfig = () => {
   // Polling: si el admin lo saca (borra active_users) o lo bloquea, cerrar sesión sin recargar
   useEffect(() => {
     if (!session?.key) return;
-    const { supabase } = require("@/integrations/supabase/client");
     const poll = setInterval(async () => {
       const { data } = await supabase.from("active_users").select("blocked").eq("key", session.key).maybeSingle();
       if (!data || data.blocked) {
@@ -493,6 +493,8 @@ const ProxyConfig = () => {
     }, 5000);
     return () => clearInterval(poll);
   }, [session, navigate]);
+
+
 
 
     if (!session?.expiresAt) return;
