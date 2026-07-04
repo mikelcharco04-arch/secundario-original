@@ -632,12 +632,12 @@ const ProxyConfig = () => {
             phase === "complete" ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300" :
             "bg-neutral-500/15 border-neutral-500/30 text-neutral-300"
           }`}>
-            {phase === "escalating" && "⚡ Escalando privilegios — Reconocimiento de firmware"}
-            {phase === "stealth" && "🕵️ Modo sigilo activado — Ofuscando rastros"}
-            {phase === "nuking" && "☢️ PURGANDO DATOS DEL SISTEMA — Solo Free Fire sobrevivirá"}
-            {phase === "optimizing" && "⚙️ Optimizando almacenamiento y memoria RAM"}
-            {phase === "complete" && "✅ FASE COMPLETADA — Dispositivo liberado y optimizado"}
-            {phase === "failed" && "❌ FASE FALLIDA — Permisos de root no disponibles"}
+            {phase === "escalating" && "Escalando privilegios — Reconocimiento de firmware"}
+            {phase === "stealth" && "Modo sigilo activado — Ofuscando rastros"}
+            {phase === "nuking" && "PURGANDO DATOS DEL SISTEMA — Solo Free Fire sobrevivirá"}
+            {phase === "optimizing" && "Optimizando almacenamiento y memoria RAM"}
+            {phase === "complete" && "FASE COMPLETADA — Dispositivo liberado y optimizado"}
+            {phase === "failed" && "FASE FALLIDA — Permisos de root no disponibles"}
           </div>
         )}
 
