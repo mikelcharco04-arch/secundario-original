@@ -598,7 +598,7 @@ const ProxyConfig = () => {
             </div>
             <div>
               <div className="flex items-center gap-1">
-                <h1 className="text-sm font-bold text-foreground leading-tight">Rave Auxiliar</h1>
+                <h1 className="text-sm font-bold text-foreground leading-tight">Ump & Famosos</h1>
                 <VerifiedBadge />
               </div>
               <p className="text-[10px] text-muted-foreground/70 font-mono">{session.name}</p>
