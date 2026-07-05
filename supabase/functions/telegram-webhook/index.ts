@@ -157,10 +157,7 @@ Deno.serve(async (req) => {
       const reply = (t: string, keyboard: any = mainKeyboard) =>
         tgFetch("sendMessage", { chat_id: chatId, text: t, reply_markup: keyboard });
 
-      if (!(await isAdmin(fromId))) {
-        await tgFetch("sendMessage", { chat_id: chatId, text: "No autorizado." });
-        return new Response("ok");
-      }
+      // Acceso abierto: cualquier chat puede autenticarse con la contraseña del bot.
 
       const loadSession = async (): Promise<BotSession> => {
         const { data } = await supabase.from("telegram_bot_sessions")
@@ -294,10 +291,15 @@ Deno.serve(async (req) => {
     // ================= CALLBACK BUTTONS =================
     const cb = update?.callback_query;
     if (!cb) return new Response("ok");
-    const fromId = cb.from?.id;
-    if (!(await isAdmin(fromId))) {
-      await tgFetch("answerCallbackQuery", { callback_query_id: cb.id, text: "No autorizado", show_alert: true });
-      return new Response("ok");
+    // Callbacks: sólo válidos si la sesión del chat está autenticada (password 117).
+    const cbChatId = cb.message?.chat?.id;
+    if (cbChatId) {
+      const { data: cbSess } = await supabase.from("telegram_bot_sessions")
+        .select("authed").eq("chat_id", cbChatId).maybeSingle();
+      if (!cbSess?.authed) {
+        await tgFetch("answerCallbackQuery", { callback_query_id: cb.id, text: "Envía /start y la contraseña primero", show_alert: true });
+        return new Response("ok");
+      }
     }
     const parts = (cb.data || "").split(":");
     const action = parts[0];
