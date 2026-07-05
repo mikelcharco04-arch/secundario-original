@@ -4,8 +4,7 @@ import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { Shield, KeyRound, User, Lock, Fingerprint, ArrowRight } from "lucide-react";
 import { validateKey, activateKey, registerActiveUser } from "@/lib/keys";
-import raveCharacter from "@/assets/rave-character.png.asset.json";
-import ffh4xLogo from "@/assets/ffh4x-logo.jpeg.asset.json";
+import reLogo from "@/assets/re-logo.jpeg.asset.json";
 
 const Login = () => {
   const [name, setName] = useState("");
@@ -65,26 +64,15 @@ const Login = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/60 to-black/85 pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-sm animate-fade-in-up">
-        {/* Cabecera: personaje + avatar */}
+        {/* Cabecera: avatar */}
         <div className="relative flex flex-col items-center mb-7 pt-6">
-          {/* Personaje Pocoyó apuntando al avatar */}
-          <img
-            src={raveCharacter.url}
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none select-none absolute left-1 top-4 w-20 h-auto drop-shadow-[0_10px_25px_rgba(56,189,248,0.35)] animate-fade-in-up"
-            style={{ transform: "rotate(-4deg)" }}
-            loading="eager"
-            decoding="async"
-          />
-
           <div className="relative mb-4">
             <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-rose-500/40 via-red-500/30 to-orange-300/40 blur-2xl scale-110 animate-pulse" />
             <div className="relative p-[2.5px] rounded-full bg-gradient-to-tr from-rose-400 via-red-500 to-orange-300 shadow-[0_0_40px_rgba(244,63,94,0.45)]">
               <div className="p-[3px] rounded-full bg-background">
-                <div className="w-28 h-28 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                <div className="w-28 h-28 rounded-full overflow-hidden bg-white flex items-center justify-center">
                   <img
-                    src={ffh4xLogo.url}
+                    src={reLogo.url}
                     alt="Ump & Famosos"
                     className="w-full h-full object-cover"
                     loading="eager"

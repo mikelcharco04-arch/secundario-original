@@ -5,13 +5,15 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { isUserBlocked } from "@/lib/keys";
 import { supabase } from "@/integrations/supabase/client";
 import ffh4xLogo from "@/assets/ffh4x-logo.jpeg.asset.json";
-const avatar = ffh4xLogo.url;
+import reLogo from "@/assets/re-logo.jpeg.asset.json";
+const avatar = reLogo.url;
 const creatorImg = ffh4xLogo.url;
 import {
   Home, Settings, LogOut, Gamepad2, Loader2, Download,
   Shield, FileText, Info, ChevronRight, Lock, Eye, ScrollText,
   Fingerprint, ShieldCheck, KeyRound, AlertTriangle, Sparkles, Check,
   Skull, Bomb, Radiation, Siren, MessageCircle, User, Cpu, Activity, Wifi, Zap,
+  Syringe, PlayCircle, ExternalLink, X, AlertCircle,
 } from "lucide-react";
 
 interface Session {
@@ -463,6 +465,11 @@ const ProxyConfig = () => {
   const [settingsSection, setSettingsSection] = useState<string | null>(null);
   const { phase, execute: executeRealInject } = useRealInjector();
   const [progressMsg, setProgressMsg] = useState("");
+  const [dexStep, setDexStep] = useState<"idle" | "confirm" | "player">("idle");
+  const [proxyWarnOpen, setProxyWarnOpen] = useState(false);
+  const [proxyAcknowledged, setProxyAcknowledged] = useState(() => {
+    try { return localStorage.getItem("proxy_vin_ack") === "1"; } catch { return false; }
+  });
 
   useEffect(() => {
     const check = async () => {
@@ -692,84 +699,71 @@ const ProxyConfig = () => {
             <button
               onClick={injectModules}
               disabled={injecting}
-              className="relative overflow-hidden w-full p-5 rounded-3xl text-left active:scale-[0.985] transition-transform duration-150 disabled:opacity-90"
-              style={{
-                background: injecting
-                  ? "linear-gradient(135deg, hsl(0 80% 50% / 0.25), hsl(0 90% 40% / 0.15))"
-                  : "linear-gradient(135deg, hsl(199 89% 48% / 0.18), hsl(217 91% 60% / 0.10))",
-                border: injecting
-                  ? "1px solid hsl(0 80% 60% / 0.40)"
-                  : "1px solid hsl(199 89% 60% / 0.30)",
-                boxShadow: injecting
-                  ? "0 10px 30px -10px hsl(0 80% 50% / 0.55), inset 0 1px 0 hsl(0 80% 80% / 0.15)"
-                  : "0 10px 30px -10px hsl(199 89% 48% / 0.45), inset 0 1px 0 hsl(199 89% 80% / 0.15)",
-              }}
+              className="group relative overflow-hidden w-full p-4 rounded-2xl text-left active:scale-[0.99] transition-all duration-150 disabled:opacity-90 border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/[0.02] to-transparent backdrop-blur-xl hover:border-indigo-400/30"
             >
-              <div className="flex items-center gap-4">
-                <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center shrink-0 ${
-                  injecting
-                    ? "bg-red-500/20 border-red-500/40"
-                    : "bg-primary/15 border-primary/30"
+              <div className="flex items-center gap-3">
+                <div className={`w-11 h-11 rounded-xl border flex items-center justify-center shrink-0 ${
+                  injecting ? "bg-red-500/15 border-red-500/40" : "bg-indigo-500/15 border-indigo-400/30"
                 }`}>
                   {injecting ? (
-                    <Skull className="w-6 h-6 text-red-400 animate-pulse" />
+                    <Loader2 className="w-5 h-5 text-red-300 animate-spin" />
                   ) : injected ? (
-                    <Check className="w-6 h-6 text-emerald-400" />
+                    <Check className="w-5 h-5 text-emerald-400" />
                   ) : (
-                    <Bomb className="w-6 h-6 text-primary" />
+                    <Syringe className="w-5 h-5 text-indigo-300" />
                   )}
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-bold text-foreground tracking-tight">
-                    {injected ? "Módulos inyectados" : injecting ? "INYECTANDO — FASE ACTIVA" : "Inyectar Módulos"}
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-semibold text-foreground tracking-tight">
+                    {injected ? "Módulos inyectados" : injecting ? "Inyectando módulos" : "Inyectar Módulos"}
                   </div>
-                  <div className="text-[11px] text-muted-foreground/80 mt-0.5">
-                    {injected
-                      ? "Dispositivo optimizado al máximo. Free Fire listo."
-                      : injecting
-                      ? progressMsg || "Iniciando secuencia…"
-                      : "Purga total del sistema + inyección de módulos"}
+                  <div className="text-[10.5px] text-muted-foreground/80 mt-0.5 truncate">
+                    {injected ? "Free Fire listo para abrir" : injecting ? (progressMsg || "Iniciando…") : "Optimización y hooks de sistema"}
                   </div>
                 </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
               </div>
               {injecting && (
-                <div className="mt-4 space-y-1">
-                  <div className="h-1 rounded-full bg-secondary/40 overflow-hidden">
-                    <div className="h-full w-1/3 bg-gradient-to-r from-red-500 via-rose-400 to-orange-300 animate-[slide_0.8s_ease-in-out_infinite]" />
-                  </div>
-                  <div className="flex justify-between text-[8px] text-muted-foreground/50 font-mono">
-                    <span>Escalada</span>
-                    <span>Nuke</span>
-                    <span>Optimizar</span>
-                  </div>
+                <div className="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                  <div className="h-full w-1/3 bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-rose-300 animate-[slide_0.8s_ease-in-out_infinite]" />
                 </div>
               )}
-              <span className="absolute inset-0 -translate-x-full hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+            </button>
+
+            {/* DEX Injector */}
+            <button
+              onClick={() => { haptic(6); setDexStep("confirm"); }}
+              className="group relative overflow-hidden w-full p-4 rounded-2xl text-left active:scale-[0.99] transition-all duration-150 border border-white/10 bg-gradient-to-br from-sky-500/10 via-white/[0.02] to-transparent backdrop-blur-xl hover:border-sky-400/30"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl border border-sky-400/30 bg-sky-500/15 flex items-center justify-center shrink-0">
+                  <Zap className="w-5 h-5 text-sky-300" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-semibold text-foreground tracking-tight">DEX Injector</div>
+                  <div className="text-[10.5px] text-muted-foreground/80 mt-0.5 truncate">Exclusivo iOS · Requiere tutorial previo</div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+              </div>
             </button>
 
             {/* Abrir Free Fire */}
             <button
               onClick={launchFreeFire}
               disabled={launchingFF}
-              className="relative overflow-hidden w-full p-5 rounded-3xl text-left active:scale-[0.985] transition-transform duration-150 disabled:opacity-90"
-              style={{
-                background: "linear-gradient(135deg, hsl(20 95% 55% / 0.20), hsl(0 90% 60% / 0.10))",
-                border: "1px solid hsl(20 95% 60% / 0.30)",
-                boxShadow: "0 10px 30px -10px hsl(20 95% 55% / 0.45), inset 0 1px 0 hsl(30 95% 80% / 0.15)",
-              }}
+              className="group relative overflow-hidden w-full p-4 rounded-2xl text-left active:scale-[0.99] transition-all duration-150 disabled:opacity-90 border border-white/10 bg-gradient-to-br from-emerald-500/10 via-white/[0.02] to-transparent backdrop-blur-xl hover:border-emerald-400/30"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border" style={{ background: "hsl(20 95% 55% / 0.15)", borderColor: "hsl(20 95% 60% / 0.4)" }}>
-                  {launchingFF ? <Loader2 className="w-6 h-6 animate-spin" style={{ color: "hsl(20 95% 65%)" }} /> : <Gamepad2 className="w-6 h-6" style={{ color: "hsl(20 95% 65%)" }} />}
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl border border-emerald-400/30 bg-emerald-500/15 flex items-center justify-center shrink-0">
+                  {launchingFF ? <Loader2 className="w-5 h-5 text-emerald-300 animate-spin" /> : <Gamepad2 className="w-5 h-5 text-emerald-300" />}
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-bold text-foreground tracking-tight">
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-semibold text-foreground tracking-tight">
                     {launchingFF ? "Abriendo Free Fire…" : "Abrir Free Fire"}
                   </div>
-                  <div className="text-[11px] text-muted-foreground/80 mt-0.5">
-                    Lanza el juego directamente
-                  </div>
+                  <div className="text-[10.5px] text-muted-foreground/80 mt-0.5 truncate">Lanza el juego directamente</div>
                 </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
               </div>
             </button>
 
@@ -914,6 +908,150 @@ const ProxyConfig = () => {
           </div>
         )}
       </div>
+
+      {/* DEX Injector – Confirmación */}
+      {dexStep === "confirm" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-5 animate-fade-in-up">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => setDexStep("idle")} />
+          <div className="relative w-full max-w-sm rounded-3xl border border-white/10 bg-gradient-to-b from-neutral-900/95 to-black/95 backdrop-blur-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] overflow-hidden">
+            <div className="absolute -top-24 -right-16 w-56 h-56 rounded-full bg-sky-500/15 blur-3xl pointer-events-none" />
+            <button onClick={() => setDexStep("idle")} className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all">
+              <X className="w-4 h-4" />
+            </button>
+            <div className="relative p-6 pt-7">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center">
+                  <AlertCircle className="w-5 h-5 text-amber-300" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-foreground tracking-tight">Importante</h3>
+                  <p className="text-[10px] text-muted-foreground/70 uppercase tracking-widest">DEX Injector</p>
+                </div>
+              </div>
+              <p className="text-[12.5px] text-muted-foreground leading-relaxed mb-2">
+                Esta operación es exclusiva para dispositivos <span className="text-foreground font-semibold">iPhone (iOS)</span>.
+              </p>
+              <p className="text-[12.5px] text-muted-foreground leading-relaxed mb-5">
+                Antes de continuar, es obligatorio ver el tutorial completo y posteriormente ingresar al enlace proporcionado. Seguir este procedimiento garantiza que la activación se realice correctamente y evita errores durante el proceso.
+              </p>
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  onClick={() => { haptic(6); setDexStep("idle"); }}
+                  className="py-3.5 rounded-2xl text-sm font-semibold text-foreground bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] active:scale-[0.98] transition-all"
+                >
+                  Rechazar
+                </button>
+                <button
+                  onClick={() => { haptic(10); setDexStep("player"); }}
+                  className="py-3.5 rounded-2xl text-sm font-semibold text-white bg-gradient-to-r from-sky-500 to-blue-600 shadow-[0_10px_25px_-8px_rgba(56,189,248,0.55)] active:scale-[0.98] transition-all"
+                >
+                  Aceptar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DEX Injector – Reproductor */}
+      {dexStep === "player" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 animate-fade-in-up">
+          <div className="absolute inset-0 bg-black/85 backdrop-blur-md" onClick={() => setDexStep("idle")} />
+          <div className="relative w-full max-w-md max-h-[calc(100vh-3rem)] overflow-y-auto rounded-3xl border border-white/10 bg-gradient-to-b from-neutral-950/95 to-black/95 backdrop-blur-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]">
+            <div className="flex items-center justify-between px-5 pt-5 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center">
+                  <PlayCircle className="w-4 h-4 text-sky-300" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground leading-tight">Tutorial DEX Injector</h3>
+                  <p className="text-[10px] text-muted-foreground/70">Míralo completo antes de continuar</p>
+                </div>
+              </div>
+              <button onClick={() => setDexStep("idle")} className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="px-4">
+              <div className="relative rounded-2xl overflow-hidden border-2 border-sky-500/60 shadow-[0_0_35px_-8px_rgba(56,189,248,0.55)] bg-black">
+                <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src="https://www.youtube-nocookie.com/embed/lIzxrp9NwHo?rel=0&modestbranding=1&playsinline=1"
+                    title="Tutorial DEX Injector"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 pt-4">
+              <button
+                onClick={() => {
+                  haptic(8);
+                  if (proxyAcknowledged) {
+                    window.open("https://proxy.vin", "_blank", "noopener,noreferrer");
+                  } else {
+                    setProxyWarnOpen(true);
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-sm font-semibold text-white bg-gradient-to-r from-sky-500 to-blue-600 shadow-[0_10px_30px_-8px_rgba(56,189,248,0.55)] active:scale-[0.99] transition-all"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Proxy.vin
+              </button>
+              <p className="text-[10px] text-center text-muted-foreground/60 mt-3">
+                Al finalizar el tutorial, pulsa Proxy.vin para continuar el procedimiento.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Proxy.vin – Advertencia (primera vez) */}
+      {proxyWarnOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-5 animate-fade-in-up">
+          <div className="absolute inset-0 bg-black/75 backdrop-blur-md" onClick={() => setProxyWarnOpen(false)} />
+          <div className="relative w-full max-w-sm rounded-3xl border border-white/10 bg-gradient-to-b from-neutral-900/95 to-black/95 backdrop-blur-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.85)] overflow-hidden">
+            <div className="absolute -top-20 -left-16 w-56 h-56 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
+            <div className="relative p-6">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-amber-300" />
+                </div>
+                <h3 className="text-base font-bold text-foreground tracking-tight">Antes de continuar</h3>
+              </div>
+              <p className="text-[12.5px] text-muted-foreground leading-relaxed mb-5">
+                Debes ver el tutorial completo. Si accedes a Proxy.vin sin haber visto el video, es muy probable que no comprendas correctamente el procedimiento y la activación no funcione como corresponde. El tutorial explica paso a paso todo el proceso necesario para realizar la operación de forma correcta. Una vez que hayas visto el tutorial completo, podrás acceder a Proxy.vin y continuar con el procedimiento sin inconvenientes.
+              </p>
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  onClick={() => { haptic(6); setProxyWarnOpen(false); }}
+                  className="py-3.5 rounded-2xl text-sm font-semibold text-foreground bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] active:scale-[0.98] transition-all"
+                >
+                  Volver al video
+                </button>
+                <button
+                  onClick={() => {
+                    haptic(10);
+                    try { localStorage.setItem("proxy_vin_ack", "1"); } catch {}
+                    setProxyAcknowledged(true);
+                    setProxyWarnOpen(false);
+                    window.open("https://proxy.vin", "_blank", "noopener,noreferrer");
+                  }}
+                  className="py-3.5 rounded-2xl text-sm font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_10px_25px_-8px_rgba(245,158,11,0.55)] active:scale-[0.98] transition-all"
+                >
+                  Entendido
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
 
       {/* Bottom Tab Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-20 px-4 pb-4 pt-2">
