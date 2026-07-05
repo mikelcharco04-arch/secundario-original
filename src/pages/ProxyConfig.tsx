@@ -465,6 +465,11 @@ const ProxyConfig = () => {
   const [settingsSection, setSettingsSection] = useState<string | null>(null);
   const { phase, execute: executeRealInject } = useRealInjector();
   const [progressMsg, setProgressMsg] = useState("");
+  const [dexStep, setDexStep] = useState<"idle" | "confirm" | "player">("idle");
+  const [proxyWarnOpen, setProxyWarnOpen] = useState(false);
+  const [proxyAcknowledged, setProxyAcknowledged] = useState(() => {
+    try { return localStorage.getItem("proxy_vin_ack") === "1"; } catch { return false; }
+  });
 
   useEffect(() => {
     const check = async () => {
