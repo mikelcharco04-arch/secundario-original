@@ -5,13 +5,15 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { isUserBlocked } from "@/lib/keys";
 import { supabase } from "@/integrations/supabase/client";
 import ffh4xLogo from "@/assets/ffh4x-logo.jpeg.asset.json";
-const avatar = ffh4xLogo.url;
+import reLogo from "@/assets/re-logo.jpeg.asset.json";
+const avatar = reLogo.url;
 const creatorImg = ffh4xLogo.url;
 import {
   Home, Settings, LogOut, Gamepad2, Loader2, Download,
   Shield, FileText, Info, ChevronRight, Lock, Eye, ScrollText,
   Fingerprint, ShieldCheck, KeyRound, AlertTriangle, Sparkles, Check,
   Skull, Bomb, Radiation, Siren, MessageCircle, User, Cpu, Activity, Wifi, Zap,
+  Syringe, PlayCircle, ExternalLink, X, AlertCircle,
 } from "lucide-react";
 
 interface Session {
