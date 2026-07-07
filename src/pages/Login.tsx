@@ -2,9 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import VideoBackground from "@/components/VideoBackground";
 import VerifiedBadge from "@/components/VerifiedBadge";
-import { Shield, KeyRound, User, Lock, Fingerprint, ArrowRight } from "lucide-react";
+import { Shield, KeyRound, User, Lock, Fingerprint, ArrowRight, Gift } from "lucide-react";
 import { validateKey, activateKey, registerActiveUser } from "@/lib/keys";
-import reLogo from "@/assets/re-logo.jpeg.asset.json";
+import reLogoAsset from "@/assets/re-logo.jpeg.asset.json";
+
+// Prefer the static /public file (works on Vercel + any host); fall back to the CDN pointer on Lovable.
+const reLogoUrl = "/re-logo.jpeg";
+const reLogoFallback = reLogoAsset.url;
 
 const Login = () => {
   const [name, setName] = useState("");
