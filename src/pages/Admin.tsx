@@ -9,7 +9,7 @@ import {
   KeyRound, Plus, LogOut, Trash2, Copy, Check,
   Users, Ban, UserX, Clock, Terminal, Shield, Activity,
   Database, Minus, Hash, Zap, Wifi,
-  Server, Globe, Signal, Power, ChevronRight, Lock, CreditCard, X
+  Server, Globe, Signal, Power, ChevronRight, Lock, CreditCard, X, Share2, RefreshCw, Search
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,7 +17,9 @@ const Admin = () => {
   const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem("admin_auth") === "true");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"keys" | "users" | "generate" | "stats" | "payments">("generate");
+  const [activeTab, setActiveTab] = useState<"keys" | "users" | "generate" | "stats" | "payments" | "referrals">("generate");
+  const [referrals, setReferrals] = useState<any[]>([]);
+  const [refSearch, setRefSearch] = useState("");
   const [payments, setPayments] = useState<any[]>([]);
 
   const [keyType, setKeyType] = useState<"Normal" | "Premium">("Normal");
@@ -28,14 +30,16 @@ const Admin = () => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const refreshData = useCallback(async () => {
-    const [k, u, p] = await Promise.all([
+    const [k, u, p, r] = await Promise.all([
       getKeys(),
       getActiveUsers(),
       supabase.from("payment_requests").select("*").order("created_at", { ascending: false }).limit(50),
+      supabase.from("referral_users").select("*").order("created_at", { ascending: false }).limit(200),
     ]);
     setKeys(k);
     setUsers(u);
     setPayments(p.data || []);
+    setReferrals(r.data || []);
   }, []);
 
   useEffect(() => {
@@ -261,6 +265,7 @@ const Admin = () => {
             { id: "keys", label: "Keys", icon: KeyRound },
             { id: "users", label: "Usuarios", icon: Users },
             { id: "payments", label: "Pagos", icon: CreditCard },
+            { id: "referrals", label: "Referidos", icon: Share2 },
             { id: "stats", label: "Monitor", icon: Signal },
           ] as const).map(({ id, label, icon: Icon }) => (
             <button
