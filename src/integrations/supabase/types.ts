@@ -308,6 +308,93 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_users: {
+        Row: {
+          blocked: boolean
+          code: string
+          created_at: string
+          id: string
+          key_expires_at: string | null
+          key_generated: string | null
+          last_activity_at: string | null
+          link: string
+          name: string
+          owner_fingerprint: string
+          owner_ip_hash: string | null
+          rejected_count: number
+          updated_at: string
+          valid_count: number
+        }
+        Insert: {
+          blocked?: boolean
+          code: string
+          created_at?: string
+          id?: string
+          key_expires_at?: string | null
+          key_generated?: string | null
+          last_activity_at?: string | null
+          link: string
+          name: string
+          owner_fingerprint: string
+          owner_ip_hash?: string | null
+          rejected_count?: number
+          updated_at?: string
+          valid_count?: number
+        }
+        Update: {
+          blocked?: boolean
+          code?: string
+          created_at?: string
+          id?: string
+          key_expires_at?: string | null
+          key_generated?: string | null
+          last_activity_at?: string | null
+          link?: string
+          name?: string
+          owner_fingerprint?: string
+          owner_ip_hash?: string | null
+          rejected_count?: number
+          updated_at?: string
+          valid_count?: number
+        }
+        Relationships: []
+      }
+      referral_visits: {
+        Row: {
+          combined_hash: string
+          created_at: string
+          id: string
+          referral_code: string
+          rejection_reason: string | null
+          user_agent_hash: string
+          valid: boolean
+          visitor_fingerprint: string
+          visitor_ip_hash: string
+        }
+        Insert: {
+          combined_hash: string
+          created_at?: string
+          id?: string
+          referral_code: string
+          rejection_reason?: string | null
+          user_agent_hash: string
+          valid: boolean
+          visitor_fingerprint: string
+          visitor_ip_hash: string
+        }
+        Update: {
+          combined_hash?: string
+          created_at?: string
+          id?: string
+          referral_code?: string
+          rejection_reason?: string | null
+          user_agent_hash?: string
+          valid?: boolean
+          visitor_fingerprint?: string
+          visitor_ip_hash?: string
+        }
+        Relationships: []
+      }
       telegram_admins: {
         Row: {
           added_by: string | null
