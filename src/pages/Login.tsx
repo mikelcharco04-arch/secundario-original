@@ -76,7 +76,8 @@ const Login = () => {
               <div className="p-[3px] rounded-full bg-background">
                 <div className="w-28 h-28 rounded-full overflow-hidden bg-white flex items-center justify-center">
                   <img
-                    src={reLogo.url}
+                    src={reLogoUrl}
+                    onError={(e) => { const img = e.currentTarget; if (img.src !== reLogoFallback) img.src = reLogoFallback; }}
                     alt="Ump & Famosos"
                     className="w-full h-full object-cover"
                     loading="eager"
@@ -177,6 +178,16 @@ const Login = () => {
                 </span>
               </button>
             </form>
+
+            <button
+              type="button"
+              onClick={() => navigate("/free-key")}
+              className="mt-3 group w-full flex items-center justify-center gap-2 bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] text-foreground/90 font-medium py-3 rounded-xl text-sm transition-all"
+            >
+              <Gift className="w-4 h-4 text-rose-300" />
+              Obtener Key Gratis
+              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
+            </button>
           </div>
         </div>
 
