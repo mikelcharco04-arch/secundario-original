@@ -860,6 +860,105 @@ const Admin = () => {
             })}
           </div>
         )}
+
+        {/* Referrals Tab */}
+        {activeTab === "referrals" && (
+          <div className="animate-fade-in-up space-y-2" style={{ animationDelay: "0.15s" }}>
+            <div className="glass-card p-3 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Share2 className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-mono font-medium">Referidos [{referrals.length}]</span>
+              </div>
+              <div className="relative flex-1 max-w-xs">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60" />
+                <input
+                  value={refSearch}
+                  onChange={(e) => setRefSearch(e.target.value)}
+                  placeholder="Buscar nombre o código"
+                  className="w-full bg-secondary/40 border border-border/40 rounded-md pl-8 pr-2 py-1.5 text-xs focus:outline-none focus:border-primary/40"
+                  style={{ fontSize: 16 }}
+                />
+              </div>
+            </div>
+
+            {referrals.length === 0 && (
+              <div className="glass-card p-6 text-center text-xs text-muted-foreground">Sin usuarios en el sistema de referidos</div>
+            )}
+
+            {referrals
+              .filter((r) => !refSearch || r.name.toLowerCase().includes(refSearch.toLowerCase()) || r.code.toLowerCase().includes(refSearch.toLowerCase()))
+              .map((r) => {
+                const pct = Math.min(100, (r.valid_count / 20) * 100);
+                const state = r.blocked ? "bloqueado" : r.key_generated ? "completado" : "activo";
+                const stateColor = r.blocked ? "text-red-400 border-red-400/30 bg-red-400/10"
+                  : r.key_generated ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/10"
+                  : "text-sky-400 border-sky-400/30 bg-sky-400/10";
+                const toggleBlock = async () => {
+                  await supabase.from("referral_users").update({ blocked: !r.blocked }).eq("id", r.id);
+                  await refreshData();
+                };
+                const del = async () => {
+                  if (!confirm(`Eliminar referido ${r.name}?`)) return;
+                  await supabase.from("referral_visits").delete().eq("referral_code", r.code);
+                  await supabase.from("referral_users").delete().eq("id", r.id);
+                  await refreshData();
+                };
+                const reset = async () => {
+                  if (!confirm(`Reiniciar progreso de ${r.name}?`)) return;
+                  await supabase.from("referral_visits").delete().eq("referral_code", r.code);
+                  await supabase.from("referral_users").update({ valid_count: 0, rejected_count: 0 }).eq("id", r.id);
+                  await refreshData();
+                };
+                const revoke = async () => {
+                  if (!r.key_generated) return;
+                  await supabase.from("proxy_keys").delete().eq("key", r.key_generated);
+                  await supabase.from("referral_users").update({ key_generated: null, key_expires_at: null }).eq("id", r.id);
+                  await refreshData();
+                };
+                return (
+                  <div key={r.id} className="glass-card p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-mono font-medium text-foreground">{r.name}</div>
+                      <div className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${stateColor}`}>{state}</div>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono">
+                      <span className="text-rose-300">{r.code}</span>
+                      <span>{new Date(r.created_at).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}</span>
+                    </div>
+                    <a href={r.link} target="_blank" rel="noreferrer" className="block text-[10px] text-muted-foreground/80 truncate underline">{r.link}</a>
+                    <div>
+                      <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
+                        <span>Válidos: <span className="text-emerald-400">{r.valid_count}</span> / 20 · Rechazados: <span className="text-amber-400">{r.rejected_count}</span></span>
+                        <span>{r.last_activity_at ? new Date(r.last_activity_at).toLocaleTimeString("es-ES") : "—"}</span>
+                      </div>
+                      <div className="h-1.5 bg-secondary/40 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-rose-500 to-red-500 transition-all duration-700" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                    {r.key_generated && (
+                      <div className="text-[11px] font-mono bg-emerald-500/10 border border-emerald-500/30 rounded p-2 text-emerald-300 break-all">
+                        Key: {r.key_generated} · Expira {r.key_expires_at ? new Date(r.key_expires_at).toLocaleString("es-ES") : "—"}
+                      </div>
+                    )}
+                    <div className="grid grid-cols-4 gap-1.5 pt-1">
+                      <button onClick={toggleBlock} className="py-1.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] hover:bg-amber-500/20 active:scale-95 flex items-center justify-center gap-1">
+                        <Ban className="w-3 h-3" /> {r.blocked ? "Desbloq" : "Bloq"}
+                      </button>
+                      <button onClick={reset} className="py-1.5 rounded-md bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[10px] hover:bg-sky-500/20 active:scale-95 flex items-center justify-center gap-1">
+                        <RefreshCw className="w-3 h-3" /> Reset
+                      </button>
+                      <button onClick={revoke} disabled={!r.key_generated} className="py-1.5 rounded-md bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-300 text-[10px] hover:bg-fuchsia-500/20 active:scale-95 flex items-center justify-center gap-1 disabled:opacity-30">
+                        <KeyRound className="w-3 h-3" /> Revocar
+                      </button>
+                      <button onClick={del} className="py-1.5 rounded-md bg-red-500/10 border border-red-500/30 text-red-300 text-[10px] hover:bg-red-500/20 active:scale-95 flex items-center justify-center gap-1">
+                        <Trash2 className="w-3 h-3" /> Borrar
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        )}
       </div>
     </div>
   );
